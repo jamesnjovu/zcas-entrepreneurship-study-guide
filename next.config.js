@@ -7,8 +7,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/enter-study-guide' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/enter-study-guide' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/zcas-entrepreneurship-study-guide' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/zcas-entrepreneurship-study-guide' : '',
 };
 
 module.exports = nextConfig;

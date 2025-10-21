@@ -10,9 +10,8 @@ This guide explains how to deploy the ZCAS Innovation & Entrepreneurship Study G
 ## Setup Steps
 
 ### 1. Repository Configuration
-1. Create a new repository on GitHub named `enter-study-guide`
-2. **Do NOT initialize with README** (we already have one)
-3. Set repository visibility to Public (required for GitHub Pages on free accounts)
+1. Your repository is already created: `zcas-entrepreneurship-study-guide`
+2. Set repository visibility to Public (required for GitHub Pages on free accounts)
 
 ### 2. GitHub Pages Settings
 1. Go to your repository on GitHub
@@ -50,7 +49,7 @@ git push -u origin main
 1. After pushing, go to the **Actions** tab in your GitHub repository
 2. You'll see the deployment workflow running
 3. Once completed, your site will be available at:
-   `https://USERNAME.github.io/enter-study-guide/`
+   `https://jamesnjovu.github.io/zcas-entrepreneurship-study-guide/`
 
 ## Project Configuration Details
 
@@ -145,4 +144,4 @@ To update the deployed site:
 3. Push changes to main branch
 4. GitHub Actions will automatically redeploy
 
-The site will be available at: `https://yourusername.github.io/enter-study-guide/`
+The site will be available at: `https://jamesnjovu.github.io/zcas-entrepreneurship-study-guide/`
