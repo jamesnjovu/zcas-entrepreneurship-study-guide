@@ -31,7 +31,7 @@ const StudyGuideContent = () => {
     resetQuiz
   } = useStudyGuideContext();
 
-  const onUnitSelect = (unit) => {
+  const onUnitSelect = (unit: any) => {
     handleUnitSelect(unit);
     resetQuiz();
   };
