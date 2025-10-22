@@ -1,4 +1,4 @@
-import { Volume2 } from 'lucide-react';
+import { Volume2, Check, X } from 'lucide-react';
 
 const QuizQuestion = ({ 
   question, 

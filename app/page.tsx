@@ -6,7 +6,9 @@ import HomeView from '../components/HomeView';
 import TopicsView from '../components/TopicsView';
 import ContentView from '../components/ContentView';
 import QuizView from '../components/QuizView';
+import PastExamView from '../components/PastExamView';
 import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideContext';
+import { pastExamQuestions } from '../data/pastExamQuestions';
 
 const StudyGuideContent = () => {
   const {
@@ -24,6 +26,7 @@ const StudyGuideContent = () => {
     handleSubmitQuiz,
     handleBackToHome,
     handleBackToTopics,
+    handlePastExamSelect,
     handleNextTopic,
     handlePreviousTopic,
     isFirstTopic,
@@ -47,7 +50,11 @@ const StudyGuideContent = () => {
         <Header currentView={currentView} onBackToHome={handleBackToHome} />
         
         {currentView === 'home' && (
-          <HomeView units={studyData.units} onUnitSelect={onUnitSelect} />
+          <HomeView 
+            units={studyData.units} 
+            onUnitSelect={onUnitSelect} 
+            onPastExamSelect={handlePastExamSelect}
+          />
         )}
         
         {currentView === 'topics' && selectedUnit && (
@@ -79,6 +86,13 @@ const StudyGuideContent = () => {
             onQuizAnswer={handleQuizAnswer}
             onSubmitQuiz={handleSubmitQuiz}
             onBackToTopics={handleBackToTopics}
+          />
+        )}
+
+        {currentView === 'pastExam' && (
+          <PastExamView 
+            pastExamQuestions={pastExamQuestions}
+            onBackToHome={handleBackToHome}
           />
         )}
       </div>

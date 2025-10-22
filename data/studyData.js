@@ -2562,5 +2562,5 @@ export const studyData = {
         },
       ],
     },
-  ],
+  ]
 };
