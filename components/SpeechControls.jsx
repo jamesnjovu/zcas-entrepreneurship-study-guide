@@ -16,6 +16,10 @@ const SpeechControls = ({
   onRateChange,
   pitch,
   onPitchChange,
+  autoAdvance,
+  onAutoAdvanceChange,
+  showProgressBar,
+  onShowProgressBarChange,
   className = ""
 }) => {
   const [showSettings, setShowSettings] = useState(false);
@@ -37,10 +41,10 @@ const SpeechControls = ({
           <button
             onClick={onSpeak}
             className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            title="Read aloud"
+            title="Read current page aloud and automatically advance to next page when finished"
           >
             <Volume2 size={16} />
-            <span className="text-sm">Listen</span>
+            <span className="text-sm">Listen & Auto-Advance</span>
           </button>
         ) : (
           <div className="flex gap-1">
@@ -136,6 +140,34 @@ const SpeechControls = ({
               onChange={(e) => onPitchChange(parseFloat(e.target.value))}
               className="w-full"
             />
+          </div>
+
+          {/* Auto-advance toggle */}
+          <div className="mb-3">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                checked={autoAdvance}
+                onChange={(e) => onAutoAdvanceChange?.(e.target.checked)}
+                className="rounded"
+              />
+              Auto-advance to next page
+            </label>
+            <p className="text-xs text-gray-500 mt-1">Automatically move to next page when speech finishes</p>
+          </div>
+
+          {/* Progress bar toggle */}
+          <div className="mb-4">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                checked={showProgressBar}
+                onChange={(e) => onShowProgressBarChange?.(e.target.checked)}
+                className="rounded"
+              />
+              Show progress bar
+            </label>
+            <p className="text-xs text-gray-500 mt-1">Display reading progress and current text</p>
           </div>
 
           <button

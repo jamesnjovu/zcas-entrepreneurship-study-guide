@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export const useTextToSpeech = () => {
   const [isSupported, setIsSupported] = useState(false);
@@ -8,6 +8,32 @@ export const useTextToSpeech = () => {
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [rate, setRate] = useState(1);
   const [pitch, setPitch] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  const [showProgressBar, setShowProgressBar] = useState(true);
+  
+  const utteranceRef = useRef(null);
+  const progressIntervalRef = useRef(null);
+  const onCompleteRef = useRef(null);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedSettings = localStorage.getItem('speechSettings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setRate(settings.rate || 1);
+          setPitch(settings.pitch || 1);
+          setAutoAdvance(settings.autoAdvance !== undefined ? settings.autoAdvance : true);
+          setShowProgressBar(settings.showProgressBar !== undefined ? settings.showProgressBar : true);
+        }
+      } catch (error) {
+        console.log('Error loading speech settings:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -17,11 +43,26 @@ export const useTextToSpeech = () => {
         const availableVoices = speechSynthesis.getVoices();
         setVoices(availableVoices);
         
-        // Try to find English voice as default
-        const englishVoice = availableVoices.find(voice => 
-          voice.lang.startsWith('en')
-        );
-        setSelectedVoice(englishVoice || availableVoices[0]);
+        // Try to restore saved voice or find English voice as default
+        const savedSettings = localStorage.getItem('speechSettings');
+        let targetVoice = null;
+        
+        if (savedSettings) {
+          try {
+            const settings = JSON.parse(savedSettings);
+            if (settings.selectedVoiceName) {
+              targetVoice = availableVoices.find(voice => voice.name === settings.selectedVoiceName);
+            }
+          } catch (error) {
+            console.log('Error parsing saved voice:', error);
+          }
+        }
+        
+        if (!targetVoice) {
+          targetVoice = availableVoices.find(voice => voice.lang.startsWith('en')) || availableVoices[0];
+        }
+        
+        setSelectedVoice(targetVoice);
       };
 
       loadVoices();
@@ -33,13 +74,48 @@ export const useTextToSpeech = () => {
     }
   }, []);
 
-  const speak = useCallback((text) => {
+  // Save settings to localStorage
+  const saveSettings = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const settings = {
+          rate,
+          pitch,
+          autoAdvance,
+          showProgressBar,
+          selectedVoiceName: selectedVoice?.name || null
+        };
+        localStorage.setItem('speechSettings', JSON.stringify(settings));
+      } catch (error) {
+        console.log('Error saving speech settings:', error);
+      }
+    }
+  }, [rate, pitch, autoAdvance, showProgressBar, selectedVoice]);
+
+  // Save settings when they change
+  useEffect(() => {
+    saveSettings();
+  }, [saveSettings]);
+
+  const clearProgress = useCallback(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    setProgress(0);
+  }, []);
+
+  const speak = useCallback((text, onComplete = null) => {
     if (!isSupported || !text) return;
 
-    // Cancel any ongoing speech
+    // Cancel any ongoing speech and clear progress
     speechSynthesis.cancel();
+    clearProgress();
 
     const utterance = new SpeechSynthesisUtterance(text);
+    utteranceRef.current = utterance;
+    onCompleteRef.current = onComplete;
+    setCurrentText(text);
     
     if (selectedVoice) {
       utterance.voice = selectedVoice;
@@ -51,20 +127,45 @@ export const useTextToSpeech = () => {
     utterance.onstart = () => {
       setIsSpeaking(true);
       setIsPaused(false);
+      setProgress(0);
+      
+      // Start progress tracking
+      const estimatedDuration = (text.length / (rate * 10)) * 1000; // Rough estimate in ms
+      let startTime = Date.now();
+      
+      progressIntervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progressPercent = Math.min((elapsed / estimatedDuration) * 100, 95); // Cap at 95% until actual end
+        setProgress(progressPercent);
+      }, 100);
     };
     
     utterance.onend = () => {
       setIsSpeaking(false);
       setIsPaused(false);
+      setProgress(100);
+      clearProgress();
+      
+      // Call completion callback after a short delay
+      if (onCompleteRef.current) {
+        setTimeout(() => {
+          if (onCompleteRef.current) {
+            onCompleteRef.current();
+            onCompleteRef.current = null;
+          }
+        }, 500);
+      }
     };
     
     utterance.onerror = () => {
       setIsSpeaking(false);
       setIsPaused(false);
+      clearProgress();
+      onCompleteRef.current = null;
     };
 
     speechSynthesis.speak(utterance);
-  }, [isSupported, selectedVoice, rate, pitch]);
+  }, [isSupported, selectedVoice, rate, pitch, clearProgress]);
 
   const pause = useCallback(() => {
     if (!isSupported) return;
@@ -83,7 +184,9 @@ export const useTextToSpeech = () => {
     speechSynthesis.cancel();
     setIsSpeaking(false);
     setIsPaused(false);
-  }, [isSupported]);
+    clearProgress();
+    onCompleteRef.current = null;
+  }, [isSupported, clearProgress]);
 
   const speakContent = useCallback((topic) => {
     if (!topic || !isSupported) return;
@@ -119,9 +222,15 @@ export const useTextToSpeech = () => {
     selectedVoice,
     rate,
     pitch,
+    progress,
+    currentText,
+    autoAdvance,
+    showProgressBar,
     setSelectedVoice,
     setRate,
     setPitch,
+    setAutoAdvance,
+    setShowProgressBar,
     speak,
     pause,
     resume,

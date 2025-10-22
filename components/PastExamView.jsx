@@ -19,9 +19,15 @@ const PastExamView = ({
     selectedVoice,
     rate,
     pitch,
+    progress,
+    currentText,
+    autoAdvance,
+    showProgressBar,
     setSelectedVoice,
     setRate,
     setPitch,
+    setAutoAdvance,
+    setShowProgressBar,
     speak,
     pause,
     resume,
@@ -80,6 +86,35 @@ const PastExamView = ({
     if (currentPageIndex < examPages.length - 1) {
       setCurrentPageIndex(currentPageIndex + 1);
       setShowModelAnswers(false);
+    }
+  };
+
+  const handleAutoAdvance = () => {
+    if (currentPageIndex < examPages.length - 1) {
+      const nextIndex = currentPageIndex + 1;
+      setCurrentPageIndex(nextIndex);
+      setShowModelAnswers(false);
+      
+      // Auto-start reading the next page after a brief pause
+      setTimeout(() => {
+        const nextPage = examPages[nextIndex];
+        if (nextPage) {
+          const textToSpeak = getPageText(nextPage);
+          speak(textToSpeak, handleAutoAdvance);
+        }
+      }, 1000);
+    }
+  };
+
+  const getPageText = (page) => {
+    if (page.type === 'examInfo') {
+      return `${page.content.title}. ${page.content.courseName}. Instructions: ${page.content.instructions.join('. ')}`;
+    } else if (page.type === 'sectionInfo') {
+      return `${page.content.title}. ${page.content.instructions}`;
+    } else if (page.content.context) {
+      return `Context: ${page.content.context}. Question: ${page.content.question || 'This question has multiple parts'}`;
+    } else {
+      return page.content.question || 'This question has multiple parts';
     }
   };
 
@@ -210,15 +245,8 @@ const PastExamView = ({
                 isSpeaking={isSpeaking}
                 isPaused={isPaused}
                 onSpeak={() => {
-                  // Speak the current page content
-                  const textToSpeak = currentPage.type === 'examInfo' 
-                    ? `${currentPage.content.title}. ${currentPage.content.courseName}. Instructions: ${currentPage.content.instructions.join('. ')}`
-                    : currentPage.type === 'sectionInfo'
-                    ? `${currentPage.content.title}. ${currentPage.content.instructions}`
-                    : currentPage.content.context 
-                      ? `Context: ${currentPage.content.context}. Question: ${currentPage.content.question || 'Question with multiple parts'}`
-                      : currentPage.content.question || 'Question with multiple parts';
-                  speak(textToSpeak);
+                  const textToSpeak = getPageText(currentPage);
+                  speak(textToSpeak, autoAdvance ? handleAutoAdvance : null);
                 }}
                 onPause={pause}
                 onResume={resume}
@@ -230,10 +258,39 @@ const PastExamView = ({
                 onRateChange={setRate}
                 pitch={pitch}
                 onPitchChange={setPitch}
+                autoAdvance={autoAdvance}
+                onAutoAdvanceChange={setAutoAdvance}
+                showProgressBar={showProgressBar}
+                onShowProgressBarChange={setShowProgressBar}
                 className="flex-shrink-0"
               />
             </div>
           </div>
+          
+          {/* Speech Progress Bar */}
+          {showProgressBar && (isSpeaking || progress > 0) && (
+            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  {isSpeaking ? 'Reading...' : 'Speech Complete'}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {Math.round(progress)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              {currentText && (
+                <p className="text-xs text-gray-600 mt-2 line-clamp-2">
+                  {currentText.length > 100 ? `${currentText.substring(0, 100)}...` : currentText}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Page Content */}
@@ -331,7 +388,7 @@ const PastExamView = ({
                     const textToSpeak = currentPage.content.context 
                       ? `Context: ${currentPage.content.context}. Question: ${currentPage.content.question || 'This question has multiple parts'}`
                       : currentPage.content.question || 'This question has multiple parts';
-                    speak(textToSpeak);
+                    speak(textToSpeak); // No auto-advance for individual button
                   }}
                   className="p-2 text-blue-600 hover:bg-blue-100 rounded transition"
                   title="Read question aloud"
@@ -419,7 +476,7 @@ const PastExamView = ({
                             Part {part.part || idx + 1}
                           </h4>
                           <button
-                            onClick={() => speak(`Part ${part.part || idx + 1}. ${part.question}`)}
+                            onClick={() => speak(`Part ${part.part || idx + 1}. ${part.question}`)} // No auto-advance for individual parts
                             className="p-1 text-blue-600 hover:bg-blue-100 rounded transition"
                             title="Read part aloud"
                           >

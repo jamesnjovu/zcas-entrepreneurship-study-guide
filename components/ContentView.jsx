@@ -19,17 +19,41 @@ const ContentView = ({
     selectedVoice,
     rate,
     pitch,
+    progress,
+    currentText,
+    autoAdvance,
+    showProgressBar,
     setSelectedVoice,
     setRate,
     setPitch,
+    setAutoAdvance,
+    setShowProgressBar,
+    speak,
     pause,
     resume,
     stop,
     speakContent,
   } = useTextToSpeech();
 
+  const handleAutoAdvanceToNextTopic = () => {
+    if (!isLastTopic && autoAdvance) {
+      setTimeout(() => {
+        onNextTopic();
+      }, 1000);
+    }
+  };
+
   const handleSpeak = () => {
-    speakContent(topic);
+    // Convert topic content to text for the new speak function
+    let textToSpeak = `${topic.title}. `;
+    topic.content.forEach((section) => {
+      textToSpeak += `${section.heading}. `;
+      section.points.forEach((point) => {
+        textToSpeak += `${point}. `;
+      });
+    });
+    
+    speak(textToSpeak, autoAdvance && !isLastTopic ? handleAutoAdvanceToNextTopic : null);
   };
   return (
     <div>
@@ -65,10 +89,39 @@ const ContentView = ({
                 onRateChange={setRate}
                 pitch={pitch}
                 onPitchChange={setPitch}
+                autoAdvance={autoAdvance}
+                onAutoAdvanceChange={setAutoAdvance}
+                showProgressBar={showProgressBar}
+                onShowProgressBarChange={setShowProgressBar}
                 className="flex-shrink-0"
               />
             </div>
           </div>
+          
+          {/* Speech Progress Bar */}
+          {showProgressBar && (isSpeaking || progress > 0) && (
+            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  {isSpeaking ? 'Reading...' : 'Speech Complete'}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {Math.round(progress)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              {currentText && (
+                <p className="text-xs text-gray-600 mt-2 line-clamp-2">
+                  {currentText.length > 100 ? `${currentText.substring(0, 100)}...` : currentText}
+                </p>
+              )}
+            </div>
+          )}
         </div>
         
         {topic.content.map((section, idx) => (
