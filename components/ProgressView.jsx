@@ -4,10 +4,15 @@ import { useTheme } from '../hooks/useTheme';
 import { studyData } from '../data/studyData';
 
 const ProgressView = ({ onBack }) => {
-  const { progress, getProgressStats, getQuizResults, isTopicCompleted, clearProgress } = useProgress();
+  const { progress, getProgressStats, getQuizResults, isTopicCompleted, clearProgress, addSampleProgress } = useProgress();
   const { isDark } = useTheme();
   const stats = getProgressStats();
   const allQuizResults = getQuizResults();
+  
+  // Debug logging
+  console.log('ProgressView - Current progress:', progress);
+  console.log('ProgressView - Stats:', stats);
+  console.log('ProgressView - Quiz results:', allQuizResults);
 
   // Calculate topic completion stats
   const totalTopics = studyData.units.reduce((total, unit) => total + unit.topics.length, 0);
@@ -60,6 +65,16 @@ const ProgressView = ({ onBack }) => {
           <TrendingUp size={64} className={`mx-auto mb-4 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
           <h2 className={`text-3xl font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-900'} mb-2`}>Study Progress</h2>
           <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Track your learning journey and achievements</p>
+          
+          {/* Debug Button - Remove in production */}
+          {stats.completedTopicsCount === 0 && stats.totalQuizzesTaken === 0 && (
+            <button
+              onClick={addSampleProgress}
+              className={`mt-4 px-4 py-2 ${isDark ? 'bg-blue-700 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-lg transition text-sm`}
+            >
+              Add Sample Progress (Demo)
+            </button>
+          )}
         </div>
 
         {/* Overview Stats */}

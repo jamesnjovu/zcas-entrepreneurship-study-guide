@@ -112,11 +112,8 @@ export const pastExamQuestions = [
                   "Differentiate between the make-up of a business opportunity and the qualities of a good opportunity.",
                 answerSource:
                   "Unit 5 – Entrepreneurship & Business Opportunities → Make-up and Qualities",
-                modelAnswer: [
-                  "Make-up: The four elements — market need, means to meet the need, method to apply the means, and method to benefit.",
-                  "Qualities: Attractive to customers, timely, durable, and value-adding.",
-                  "Key Difference: Make-up defines structure, while qualities define desirability and strength of the opportunity.",
-                ],
+                modelAnswer: 
+                  "Make-up: The four elements:\n• Market need\n• Means to meet the need\n• Method to apply the means\n• Method to benefit\n\nQualities: Attractive to customers, timely, durable, and value-adding.\n\nKey Difference: Make-up defines structure, while qualities define desirability and strength of the opportunity.",
               },
             ],
           },
@@ -263,11 +260,11 @@ export const pastExamQuestions = [
                 answerSource:
                   "Unit 1 – Creativity, Invention and Innovation → Entrepreneurship Introduction",
                 modelAnswer: [
-                  "1. Opportunity Recognition – Identify viable business ideas.",
-                  "2. Feasibility Analysis – Evaluate practicality and profitability.",
-                  "3. Business Plan Development – Outline strategy, market, and operations.",
-                  "4. Resource Mobilization – Gather funds, people, and materials.",
-                  "5. Implementation & Growth – Launch, monitor, and expand the venture.",
+                  "1. Opportunity Identification – Identify viable business ideas.\nExample: Seeing that rural communities lack access to affordable solar lights → starting a solar energy enterprise.",
+                  "2. Feasibility Study – Evaluate practicality and profitability.\nExample: Conducting a mini-survey to see if local households can afford solar kits before starting production.",
+                  "3. Business Plan Development – Outline strategy, market, and operations.\nExample: Preparing a document showing how your solar energy business will market, price, and distribute solar lamps.",
+                  "4. Resource Mobilization – Gather funds, people, and materials.\nExample: Obtaining a small business loan or crowdfunding support to buy solar panels and hire technicians.",
+                  "5. Implementation & Growth – Launch, monitor, and expand the venture.\nExample: Expanding solar energy operations to new provinces after initial success in Lusaka.",
                 ],
               },
               {
@@ -278,13 +275,13 @@ export const pastExamQuestions = [
                 answerSource:
                   "Unit 1 – Creativity, Invention and Innovation → Sources of Innovation",
                 modelAnswer: [
-                  "1. The Unexpected – New solutions from unforeseen events.",
-                  "2. The Incongruous – Fixing mismatches in processes or needs.",
-                  "3. Process Need – Improvements to production or delivery.",
-                  "4. Industry & Market Structures – Changes that open new gaps.",
-                  "5. Demographics – Population shifts creating demand.",
-                  "6. Changes in Perception – Attitudes altering market opportunities.",
-                  "7. New Knowledge – Research producing new technology.",
+                  "1. The Unexpected – New solutions from unforeseen events.\nExample: A company’s side product (like baking soda initially used for cleaning) becomes popular for a new purpose — leading to product diversification.",
+                  "2. The Incongruous – Fixing mismatches in processes or needs.\nExample: Fast-food restaurants introduced drive-through windows after realizing customers wanted “fast” service but were wasting time parking.",
+                  "3. Process Need – Improvements to production or delivery.\nExample: Introducing mobile payment systems in shops to reduce cash-handling time and errors.",
+                  "4. Industry & Market Structures – Changes that open new gaps.\nExample: The rise of e-commerce platforms like ShopZed after improved ICT infrastructure and logistics reforms in Zambia.",
+                  "5. Demographics – Population shifts creating demand.\nExample: An aging population increasing demand for healthcare services and products.",
+                  "6. Changes in Perception – Attitudes altering market opportunities.\nExample: Growing environmental awareness leading to increased demand for sustainable products.",
+                  "7. New Knowledge – Research producing new technology.\nExample: Advances in AI and machine learning creating new business opportunities.",
                 ],
               },
             ],

@@ -74,6 +74,8 @@ export const useProgress = () => {
 
   // Save quiz result
   const saveQuizResult = useCallback((unitId, score, totalQuestions, answers) => {
+    console.log('saveQuizResult called with:', { unitId, score, totalQuestions, answers });
+    
     const quizResult = {
       id: Date.now(),
       unitId,
@@ -84,7 +86,11 @@ export const useProgress = () => {
       completedAt: new Date().toISOString(),
     };
 
+    console.log('Created quiz result:', quizResult);
+
     setProgress(current => {
+      console.log('Current progress before adding quiz:', current);
+      
       const newQuizResults = [...current.quizResults, quizResult];
       
       const newProgress = {
@@ -93,10 +99,13 @@ export const useProgress = () => {
         lastActivity: new Date().toISOString(),
       };
       
+      console.log('New progress after adding quiz:', newProgress);
+      
       // Save to localStorage
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem('studyProgress', JSON.stringify(newProgress));
+          console.log('Saved to localStorage successfully');
         } catch (error) {
           console.log('Error saving progress:', error);
         }
@@ -195,6 +204,44 @@ export const useProgress = () => {
     setProgress(emptyProgress);
   }, []);
 
+  // Debug function to add sample data for testing
+  const addSampleProgress = useCallback(() => {
+    const sampleProgress = {
+      completedTopics: ['1-1', '1-2', '2-1'],
+      quizResults: [
+        {
+          id: Date.now() - 1000,
+          unitId: 1,
+          score: 8,
+          totalQuestions: 10,
+          percentage: 80,
+          answers: {},
+          completedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+        },
+        {
+          id: Date.now(),
+          unitId: 2,
+          score: 7,
+          totalQuestions: 10,
+          percentage: 70,
+          answers: {},
+          completedAt: new Date().toISOString(),
+        }
+      ],
+      readingTime: {
+        '1-1': 120, // 2 minutes
+        '1-2': 180, // 3 minutes  
+        '2-1': 90,  // 1.5 minutes
+      },
+      lastActivity: new Date().toISOString(),
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('studyProgress', JSON.stringify(sampleProgress));
+    }
+    setProgress(sampleProgress);
+  }, []);
+
   return {
     progress,
     markTopicCompleted,
@@ -204,5 +251,6 @@ export const useProgress = () => {
     isTopicCompleted,
     getQuizResults,
     clearProgress,
+    addSampleProgress, // Debug function
   };
 };

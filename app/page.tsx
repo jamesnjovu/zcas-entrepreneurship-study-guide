@@ -71,9 +71,14 @@ const StudyGuideContent = () => {
 
   const onSubmitQuiz = (answers: any) => {
     const score = handleSubmitQuiz(answers);
+    console.log('Quiz submitted - Score:', score, 'Answers:', answers);
+    
     // Save quiz result to progress tracking
     if (selectedUnit && selectedUnit.quiz) {
+      console.log('Saving quiz result for unit:', selectedUnit.id);
       saveQuizResult(selectedUnit.id, score, selectedUnit.quiz.questions.length, answers);
+    } else {
+      console.log('No unit or quiz found for saving result');
     }
   };
 

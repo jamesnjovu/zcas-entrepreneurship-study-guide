@@ -11,6 +11,17 @@ const PastExamView = ({
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showModelAnswers, setShowModelAnswers] = useState(false);
 
+  // Helper function to render text with line breaks
+  const renderTextWithLineBreaks = (text) => {
+    if (!text) return null;
+    return text.split('\n').map((line, index, array) => (
+      <span key={index}>
+        {line}
+        {index < array.length - 1 && <br />}
+      </span>
+    ));
+  };
+
   const {
     isSupported,
     isSpeaking,
@@ -453,11 +464,11 @@ const PastExamView = ({
                         {Array.isArray(currentPage.content.modelAnswer) ? (
                           <ul className="list-disc list-inside space-y-2">
                             {currentPage.content.modelAnswer.map((answer, ansIdx) => (
-                              <li key={ansIdx} className="leading-relaxed">{answer}</li>
+                              <li key={ansIdx} className="leading-relaxed">{renderTextWithLineBreaks(answer)}</li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="leading-relaxed">{currentPage.content.modelAnswer}</p>
+                          <p className="leading-relaxed">{renderTextWithLineBreaks(currentPage.content.modelAnswer)}</p>
                         )}
                       </div>
                     </div>
@@ -518,11 +529,11 @@ const PastExamView = ({
                             {Array.isArray(part.modelAnswer) ? (
                               <ul className="list-disc list-inside space-y-2">
                                 {part.modelAnswer.map((answer, ansIdx) => (
-                                  <li key={ansIdx} className="leading-relaxed">{answer}</li>
+                                  <li key={ansIdx} className="leading-relaxed">{renderTextWithLineBreaks(answer)}</li>
                                 ))}
                               </ul>
                             ) : (
-                              <p className="leading-relaxed">{part.modelAnswer}</p>
+                              <p className="leading-relaxed">{renderTextWithLineBreaks(part.modelAnswer)}</p>
                             )}
                           </div>
                         </div>
