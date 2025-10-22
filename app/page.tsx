@@ -72,7 +72,7 @@ const StudyGuideContent = () => {
     handleStartQuiz();
   };
 
-  const onSubmitQuiz = (answers) => {
+  const onSubmitQuiz = (answers: any) => {
     const score = handleSubmitQuiz(answers);
     // Save quiz result to progress tracking
     if (selectedUnit && selectedUnit.quiz) {
@@ -113,7 +113,7 @@ const StudyGuideContent = () => {
             isFirstTopic={isFirstTopic()}
             isLastTopic={isLastTopic()}
             markTopicCompleted={() => markTopicCompleted(selectedUnit?.id, selectedTopic?.id)}
-            trackReadingTime={(timeSpent) => trackReadingTime(selectedUnit?.id, selectedTopic?.id, timeSpent)}
+            trackReadingTime={(timeSpent: number) => trackReadingTime(selectedUnit?.id, selectedTopic?.id, timeSpent)}
           />
         )}
         
