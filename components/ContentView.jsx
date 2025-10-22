@@ -202,14 +202,14 @@ const ContentView = ({
         ))}
         
         {/* Navigation and Quiz buttons */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
+        <div className={`mt-8 pt-6 border-t ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             {/* Navigation buttons */}
             <div className="flex gap-2">
               <button
                 onClick={onPreviousTopic}
                 disabled={isFirstTopic}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <ChevronLeft size={20} />
                 Previous Topic
@@ -218,7 +218,7 @@ const ContentView = ({
               <button
                 onClick={onNextTopic}
                 disabled={isLastTopic}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 Next Topic
                 <ChevronRight size={20} />
@@ -228,7 +228,7 @@ const ContentView = ({
             {/* Take Quiz button */}
             <button
               onClick={onStartQuiz}
-              className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition font-semibold"
+              className={`flex items-center gap-2 px-6 py-2 ${isDark ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'} text-white rounded-lg transition font-semibold`}
             >
               <Award size={20} />
               Take Unit Quiz

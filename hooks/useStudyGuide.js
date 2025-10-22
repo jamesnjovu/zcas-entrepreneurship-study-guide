@@ -43,6 +43,12 @@ export const useStudyGuide = () => {
     setSelectedTopic(null);
   };
 
+  const handleProgressSelect = () => {
+    setCurrentView('progress');
+    setSelectedUnit(null);
+    setSelectedTopic(null);
+  };
+
   const handleNextTopic = () => {
     if (selectedUnit && selectedTopic) {
       const currentIndex = selectedUnit.topics.findIndex(topic => topic.id === selectedTopic.id);
@@ -82,6 +88,7 @@ export const useStudyGuide = () => {
     handleBackToTopics,
     handlePastExamSelect,
     handleSettingsSelect,
+    handleProgressSelect,
     handleNextTopic,
     handlePreviousTopic,
     isFirstTopic,

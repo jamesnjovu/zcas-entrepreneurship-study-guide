@@ -1,7 +1,7 @@
-import { BookOpen, Calendar, Settings } from 'lucide-react';
+import { BookOpen, Calendar, Settings, TrendingUp } from 'lucide-react';
 import UnitCard from './UnitCard';
 
-const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect }) => {
+const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect, onProgressSelect }) => {
   return (
     <div className="grid md:grid-cols-2 gap-6">
       {units.map((unit) => (
@@ -59,6 +59,33 @@ const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect }) =
           </span>
           <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center group-hover:bg-gray-400 transition">
             <span className="text-sm font-bold">⚙️</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Progress Card */}
+      <div
+        onClick={onProgressSelect}
+        className="p-6 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white"
+      >
+        <div className="flex items-center mb-4">
+          <TrendingUp className="mr-3 group-hover:scale-110 transition" size={28} />
+        </div>
+        
+        <h3 className="text-2xl font-bold mb-2 group-hover:text-green-100 transition">
+          Study Progress
+        </h3>
+        
+        <p className="text-green-100 mb-4">
+          Track your learning journey, view completed topics, quiz results, and study statistics.
+        </p>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-green-200">
+            Topics & quiz tracking
+          </span>
+          <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center group-hover:bg-green-300 transition">
+            <span className="text-sm font-bold">📊</span>
           </div>
         </div>
       </div>

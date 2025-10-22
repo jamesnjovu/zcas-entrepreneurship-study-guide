@@ -8,10 +8,13 @@ import ContentView from '../components/ContentView';
 import QuizView from '../components/QuizView';
 import PastExamView from '../components/PastExamView';
 import SettingsView from '../components/SettingsView';
+import ProgressView from '../components/ProgressView';
 import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideContext';
 import { pastExamQuestions } from '../data/pastExamQuestions';
 import { useTheme } from '../hooks/useTheme';
 import { useProgress } from '../hooks/useProgress';
+import { useOffline } from '../hooks/useOffline';
+import OfflineIndicator from '../components/OfflineIndicator';
 
 const StudyGuideContent = () => {
   const {
@@ -31,6 +34,7 @@ const StudyGuideContent = () => {
     handleBackToTopics,
     handlePastExamSelect,
     handleSettingsSelect,
+    handleProgressSelect,
     handleNextTopic,
     handlePreviousTopic,
     isFirstTopic,
@@ -38,8 +42,25 @@ const StudyGuideContent = () => {
     resetQuiz
   } = useStudyGuideContext();
 
-  const { isDark } = useTheme();
+  const { isDark, mounted } = useTheme();
   const { progress, markTopicCompleted, saveQuizResult, trackReadingTime } = useProgress();
+  const { serviceWorkerRegistered } = useOffline();
+
+  // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+              <span className="ml-2 text-gray-600">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const onUnitSelect = (unit: any) => {
     handleUnitSelect(unit);
@@ -70,6 +91,7 @@ const StudyGuideContent = () => {
             onUnitSelect={onUnitSelect} 
             onPastExamSelect={handlePastExamSelect}
             onSettingsSelect={handleSettingsSelect}
+            onProgressSelect={handleProgressSelect}
           />
         )}
         
@@ -119,7 +141,16 @@ const StudyGuideContent = () => {
             onBack={handleBackToHome}
           />
         )}
+
+        {currentView === 'progress' && (
+          <ProgressView 
+            onBack={handleBackToHome}
+          />
+        )}
       </div>
+      
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 };

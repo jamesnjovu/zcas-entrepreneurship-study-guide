@@ -20,7 +20,7 @@ const SettingsView = ({ onBack }) => {
     setAutoStart,
   } = useTextToSpeech();
 
-  const { theme, isDark, toggleTheme, setThemeMode } = useTheme();
+  const { theme, isDark, toggleTheme, setThemeMode, mounted } = useTheme();
 
   if (!isSupported) {
     return (

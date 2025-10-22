@@ -3,9 +3,11 @@ import { useState, useEffect, useCallback } from 'react';
 export const useTheme = () => {
   const [theme, setTheme] = useState('system');
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Load theme from localStorage
+  // Load theme from localStorage after mount
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       try {
         const savedTheme = localStorage.getItem('theme');
@@ -20,7 +22,7 @@ export const useTheme = () => {
 
   // Apply theme changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (mounted && typeof window !== 'undefined') {
       const applyTheme = () => {
         const root = window.document.documentElement;
         
@@ -52,18 +54,18 @@ export const useTheme = () => {
         return () => mediaQuery.removeListener(handleChange);
       }
     }
-  }, [theme]);
+  }, [theme, mounted]);
 
   // Save theme to localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (mounted && typeof window !== 'undefined') {
       try {
         localStorage.setItem('theme', theme);
       } catch (error) {
         console.log('Error saving theme:', error);
       }
     }
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
     setTheme(current => {
@@ -81,8 +83,9 @@ export const useTheme = () => {
 
   return {
     theme,
-    isDark,
+    isDark: mounted ? isDark : false, // Prevent hydration mismatch
     toggleTheme,
     setThemeMode,
+    mounted,
   };
 };

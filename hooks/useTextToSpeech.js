@@ -86,7 +86,7 @@ export const useTextToSpeech = () => {
 
   // Save settings to localStorage
   const saveSettings = useCallback(() => {
-    if (typeof window !== 'undefined') {
+    if (settingsLoaded && typeof window !== 'undefined') {
       try {
         const settings = {
           rate,
@@ -102,7 +102,7 @@ export const useTextToSpeech = () => {
         console.log('Error saving speech settings:', error);
       }
     }
-  }, [rate, pitch, autoAdvance, showProgressBar, autoStart, selectedVoice]);
+  }, [rate, pitch, autoAdvance, showProgressBar, autoStart, selectedVoice, settingsLoaded]);
 
   // Save settings when they change (but only after initial load)
   useEffect(() => {
