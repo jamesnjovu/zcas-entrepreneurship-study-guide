@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect } from 'react';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Header from '../components/Header';
 import HomeView from '../components/HomeView';
@@ -13,7 +12,6 @@ import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideC
 import { pastExamQuestions } from '../data/pastExamQuestions';
 import { useTheme } from '../hooks/useTheme';
 import { useProgress } from '../hooks/useProgress';
-import { useOffline } from '../hooks/useOffline';
 import OfflineIndicator from '../components/OfflineIndicator';
 
 const StudyGuideContent = () => {
@@ -43,8 +41,7 @@ const StudyGuideContent = () => {
   } = useStudyGuideContext();
 
   const { isDark, mounted } = useTheme();
-  const { progress, markTopicCompleted, saveQuizResult, trackReadingTime } = useProgress();
-  const { serviceWorkerRegistered } = useOffline();
+  const { markTopicCompleted, saveQuizResult, trackReadingTime } = useProgress();
 
   // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
   if (!mounted) {
