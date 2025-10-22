@@ -80,10 +80,10 @@ const SettingsView = ({ onBack }) => {
                   const voice = voices.find(v => v.name === e.target.value);
                   setSelectedVoice(voice);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 {voices.map((voice) => (
-                  <option key={voice.name} value={voice.name}>
+                  <option key={voice.name} value={voice.name} className="text-gray-900 bg-white">
                     {voice.name} ({voice.lang})
                   </option>
                 ))}

@@ -13,6 +13,7 @@ export const useTextToSpeech = () => {
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [showProgressBar, setShowProgressBar] = useState(true);
   const [autoStart, setAutoStart] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   
   const utteranceRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -32,9 +33,13 @@ export const useTextToSpeech = () => {
           setShowProgressBar(settings.showProgressBar !== undefined ? settings.showProgressBar : true);
           setAutoStart(settings.autoStart !== undefined ? settings.autoStart : false);
         }
+        setSettingsLoaded(true);
       } catch (error) {
         console.log('Error loading speech settings:', error);
+        setSettingsLoaded(true);
       }
+    } else {
+      setSettingsLoaded(true);
     }
   }, []);
 
@@ -99,10 +104,12 @@ export const useTextToSpeech = () => {
     }
   }, [rate, pitch, autoAdvance, showProgressBar, autoStart, selectedVoice]);
 
-  // Save settings when they change
+  // Save settings when they change (but only after initial load)
   useEffect(() => {
-    saveSettings();
-  }, [saveSettings]);
+    if (settingsLoaded) {
+      saveSettings();
+    }
+  }, [saveSettings, settingsLoaded]);
 
   const clearProgress = useCallback(() => {
     if (progressIntervalRef.current) {
