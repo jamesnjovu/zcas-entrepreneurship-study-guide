@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Award } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import SpeechControls from './SpeechControls';
+import { useEffect } from 'react';
 
 const ContentView = ({ 
   topic, 
@@ -23,11 +24,13 @@ const ContentView = ({
     currentText,
     autoAdvance,
     showProgressBar,
+    autoStart,
     setSelectedVoice,
     setRate,
     setPitch,
     setAutoAdvance,
     setShowProgressBar,
+    setAutoStart,
     speak,
     pause,
     resume,
@@ -55,6 +58,18 @@ const ContentView = ({
     
     speak(textToSpeak, autoAdvance && !isLastTopic ? handleAutoAdvanceToNextTopic : null);
   };
+
+  // Auto-start speech when component mounts if enabled
+  useEffect(() => {
+    if (autoStart && topic) {
+      // Delay to ensure component is fully rendered
+      const timer = setTimeout(() => {
+        handleSpeak();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [topic, autoStart, handleSpeak]); // Run when topic changes or autoStart setting changes
   return (
     <div>
       <button

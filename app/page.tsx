@@ -7,6 +7,7 @@ import TopicsView from '../components/TopicsView';
 import ContentView from '../components/ContentView';
 import QuizView from '../components/QuizView';
 import PastExamView from '../components/PastExamView';
+import SettingsView from '../components/SettingsView';
 import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideContext';
 import { pastExamQuestions } from '../data/pastExamQuestions';
 
@@ -27,6 +28,7 @@ const StudyGuideContent = () => {
     handleBackToHome,
     handleBackToTopics,
     handlePastExamSelect,
+    handleSettingsSelect,
     handleNextTopic,
     handlePreviousTopic,
     isFirstTopic,
@@ -54,6 +56,7 @@ const StudyGuideContent = () => {
             units={studyData.units} 
             onUnitSelect={onUnitSelect} 
             onPastExamSelect={handlePastExamSelect}
+            onSettingsSelect={handleSettingsSelect}
           />
         )}
         
@@ -93,6 +96,12 @@ const StudyGuideContent = () => {
           <PastExamView 
             pastExamQuestions={pastExamQuestions}
             onBackToHome={handleBackToHome}
+          />
+        )}
+
+        {currentView === 'settings' && (
+          <SettingsView 
+            onBack={handleBackToHome}
           />
         )}
       </div>

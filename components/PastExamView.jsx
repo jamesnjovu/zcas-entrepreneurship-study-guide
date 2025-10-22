@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BookOpen, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Volume2, Eye, EyeOff, Info } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import SpeechControls from './SpeechControls';
@@ -129,6 +129,19 @@ const PastExamView = ({
   const currentPage = examPages[currentPageIndex];
   const isFirstPage = currentPageIndex === 0;
   const isLastPage = currentPageIndex === examPages.length - 1;
+
+  // Auto-start speech when page changes if enabled
+  useEffect(() => {
+    if (autoStart && currentPage) {
+      // Delay to ensure component is fully rendered
+      const timer = setTimeout(() => {
+        const textToSpeak = getPageText(currentPage);
+        speak(textToSpeak, autoAdvance ? handleAutoAdvance : null);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, autoStart, autoAdvance, handleAutoAdvance, speak, getPageText]);
 
   // Exam List View
   if (!selectedExam) {

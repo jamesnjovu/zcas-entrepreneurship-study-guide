@@ -12,6 +12,7 @@ export const useTextToSpeech = () => {
   const [currentText, setCurrentText] = useState('');
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [showProgressBar, setShowProgressBar] = useState(true);
+  const [autoStart, setAutoStart] = useState(false);
   
   const utteranceRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -24,10 +25,12 @@ export const useTextToSpeech = () => {
         const savedSettings = localStorage.getItem('speechSettings');
         if (savedSettings) {
           const settings = JSON.parse(savedSettings);
+          console.log('Loading settings:', settings); // Debug log
           setRate(settings.rate || 1);
           setPitch(settings.pitch || 1);
           setAutoAdvance(settings.autoAdvance !== undefined ? settings.autoAdvance : true);
           setShowProgressBar(settings.showProgressBar !== undefined ? settings.showProgressBar : true);
+          setAutoStart(settings.autoStart !== undefined ? settings.autoStart : false);
         }
       } catch (error) {
         console.log('Error loading speech settings:', error);
@@ -52,6 +55,7 @@ export const useTextToSpeech = () => {
             const settings = JSON.parse(savedSettings);
             if (settings.selectedVoiceName) {
               targetVoice = availableVoices.find(voice => voice.name === settings.selectedVoiceName);
+              console.log('Restoring voice:', settings.selectedVoiceName, 'Found:', targetVoice?.name); // Debug log
             }
           } catch (error) {
             console.log('Error parsing saved voice:', error);
@@ -63,6 +67,7 @@ export const useTextToSpeech = () => {
         }
         
         setSelectedVoice(targetVoice);
+        console.log('Set selected voice to:', targetVoice?.name); // Debug log
       };
 
       loadVoices();
@@ -83,14 +88,16 @@ export const useTextToSpeech = () => {
           pitch,
           autoAdvance,
           showProgressBar,
+          autoStart,
           selectedVoiceName: selectedVoice?.name || null
         };
         localStorage.setItem('speechSettings', JSON.stringify(settings));
+        console.log('Saving settings:', settings); // Debug log
       } catch (error) {
         console.log('Error saving speech settings:', error);
       }
     }
-  }, [rate, pitch, autoAdvance, showProgressBar, selectedVoice]);
+  }, [rate, pitch, autoAdvance, showProgressBar, autoStart, selectedVoice]);
 
   // Save settings when they change
   useEffect(() => {
@@ -226,11 +233,13 @@ export const useTextToSpeech = () => {
     currentText,
     autoAdvance,
     showProgressBar,
+    autoStart,
     setSelectedVoice,
     setRate,
     setPitch,
     setAutoAdvance,
     setShowProgressBar,
+    setAutoStart,
     speak,
     pause,
     resume,
