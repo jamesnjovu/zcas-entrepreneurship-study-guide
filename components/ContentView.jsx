@@ -43,6 +43,12 @@ const ContentView = ({
 
   const { isDark } = useTheme();
   const readingStartTime = useRef(null);
+  const trackReadingTimeRef = useRef(trackReadingTime);
+
+  // Update the ref when trackReadingTime changes
+  useEffect(() => {
+    trackReadingTimeRef.current = trackReadingTime;
+  }, [trackReadingTime]);
 
   const handleAutoAdvanceToNextTopic = () => {
     if (!isLastTopic && autoAdvance) {
@@ -58,10 +64,15 @@ const ContentView = ({
       markTopicCompleted();
     }
     
-    // Track reading time if available
-    if (trackReadingTime && readingStartTime.current) {
-      const timeSpent = (Date.now() - readingStartTime.current) / 1000; // Convert to seconds
-      trackReadingTime(timeSpent);
+    // Track reading time if available (only when manually completing)
+    if (trackReadingTimeRef.current && readingStartTime.current && topic) {
+      const timeSpent = (Date.now() - readingStartTime.current) / 1000;
+      // Only track if meaningful time was spent
+      if (timeSpent >= 2) {
+        trackReadingTimeRef.current(topic.unitId, topic.id, timeSpent);
+        // Reset to prevent duplicate tracking
+        readingStartTime.current = Date.now();
+      }
     }
   };
 
@@ -97,15 +108,21 @@ const ContentView = ({
         return () => clearTimeout(timer);
       }
     }
+  }, [topic, autoStart, handleSpeak]);
 
-    // Cleanup on component unmount
+  // Separate effect for tracking reading time on topic change or unmount
+  useEffect(() => {
+    // Save previous reading time when topic changes
     return () => {
-      if (trackReadingTime && readingStartTime.current) {
+      if (trackReadingTimeRef.current && readingStartTime.current && topic) {
         const timeSpent = (Date.now() - readingStartTime.current) / 1000;
-        trackReadingTime(timeSpent);
+        // Only track if meaningful time was spent (more than 2 seconds)
+        if (timeSpent >= 2) {
+          trackReadingTimeRef.current(topic.unitId, topic.id, timeSpent);
+        }
       }
     };
-  }, [topic, autoStart, handleSpeak, trackReadingTime]);
+  }, [topic?.id, topic?.unitId]); // Only depend on topic ID changes
   return (
     <div>
       <button

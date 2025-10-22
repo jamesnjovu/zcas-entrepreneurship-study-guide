@@ -37,7 +37,8 @@ export const useProgress = () => {
           lastActivity: new Date().toISOString(),
         };
         localStorage.setItem('studyProgress', JSON.stringify(progressData));
-        setProgress(progressData);
+        // Don't call setProgress here to avoid infinite loops
+        // setProgress will be called by the calling function
       } catch (error) {
         console.log('Error saving progress:', error);
       }
@@ -55,12 +56,21 @@ export const useProgress = () => {
       const newProgress = {
         ...current,
         completedTopics: newCompletedTopics,
+        lastActivity: new Date().toISOString(),
       };
       
-      saveProgress(newProgress);
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('studyProgress', JSON.stringify(newProgress));
+        } catch (error) {
+          console.log('Error saving progress:', error);
+        }
+      }
+      
       return newProgress;
     });
-  }, [saveProgress]);
+  }, []);
 
   // Save quiz result
   const saveQuizResult = useCallback((unitId, score, totalQuestions, answers) => {
@@ -80,31 +90,59 @@ export const useProgress = () => {
       const newProgress = {
         ...current,
         quizResults: newQuizResults,
+        lastActivity: new Date().toISOString(),
       };
       
-      saveProgress(newProgress);
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('studyProgress', JSON.stringify(newProgress));
+        } catch (error) {
+          console.log('Error saving progress:', error);
+        }
+      }
+      
       return newProgress;
     });
-  }, [saveProgress]);
+  }, []);
 
   // Track reading time for a topic
   const trackReadingTime = useCallback((unitId, topicId, timeSpent) => {
+    if (!unitId || !topicId || timeSpent <= 0) return;
+    
     const topicKey = `${unitId}-${topicId}`;
+    
+    // Update progress state directly without causing re-renders
     setProgress(current => {
+      const currentTime = current.readingTime[topicKey] || 0;
+      const newTime = currentTime + timeSpent;
+      
+      // Only update if there's a meaningful change (avoid micro-updates)
+      if (timeSpent < 1) return current;
+      
       const newReadingTime = {
         ...current.readingTime,
-        [topicKey]: (current.readingTime[topicKey] || 0) + timeSpent,
+        [topicKey]: newTime,
       };
       
       const newProgress = {
         ...current,
         readingTime: newReadingTime,
+        lastActivity: new Date().toISOString(),
       };
       
-      saveProgress(newProgress);
+      // Save to localStorage directly
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('studyProgress', JSON.stringify(newProgress));
+        } catch (error) {
+          console.log('Error saving progress:', error);
+        }
+      }
+      
       return newProgress;
     });
-  }, [saveProgress]);
+  }, []);
 
   // Get progress statistics
   const getProgressStats = useCallback(() => {
@@ -144,8 +182,18 @@ export const useProgress = () => {
       readingTime: {},
       lastActivity: null,
     };
-    saveProgress(emptyProgress);
-  }, [saveProgress]);
+    
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('studyProgress', JSON.stringify(emptyProgress));
+      } catch (error) {
+        console.log('Error clearing progress:', error);
+      }
+    }
+    
+    setProgress(emptyProgress);
+  }, []);
 
   return {
     progress,

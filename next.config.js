@@ -3,7 +3,7 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
-  distDir: 'dist',
+  distDir: process.env.NODE_ENV === 'production' ? 'dist' : '.next',
   images: {
     unoptimized: true,
   },
