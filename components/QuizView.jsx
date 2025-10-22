@@ -1,4 +1,5 @@
-import { Award, Check, X } from 'lucide-react';
+import { Award, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import SpeechControls from './SpeechControls';
 import QuizQuestion from './QuizQuestion';
@@ -12,6 +13,8 @@ const QuizView = ({
   onSubmitQuiz, 
   onBackToTopics 
 }) => {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
   const {
     isSupported,
     isSpeaking,
@@ -31,6 +34,22 @@ const QuizView = ({
   const handleSubmit = () => {
     onSubmitQuiz(unit.quiz);
   };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < unit.quiz.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const isLastQuestion = currentQuestionIndex === unit.quiz.length - 1;
+  const allQuestionsAnswered = Object.keys(quizAnswers).length === unit.quiz.length;
 
   if (quizSubmitted) {
     return (
@@ -53,25 +72,80 @@ const QuizView = ({
             </p>
           </div>
 
-          {unit.quiz.map((question, qIdx) => (
-            <QuizQuestion
-              key={qIdx}
-              question={question}
-              questionIndex={qIdx}
-              selectedAnswer={quizAnswers[qIdx]}
-              onAnswerSelect={() => {}} // No interaction in submitted state
-              onSpeakQuestion={speakQuestion}
-              isSubmitted={true}
-              correctAnswer={question.correct}
-            />
-          ))}
+          {/* Results Navigation */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center">
+              <h4 className="text-xl font-bold text-gray-800">Review Results</h4>
+              <p className="text-gray-600">
+                Question {currentQuestionIndex + 1} of {unit.quiz.length}
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              {unit.quiz.map((_, idx) => {
+                const isCorrect = quizAnswers[idx] === unit.quiz[idx].correct;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentQuestionIndex(idx)}
+                    className={`w-6 h-6 rounded-full text-xs font-bold text-white transition ${
+                      idx === currentQuestionIndex
+                        ? 'ring-2 ring-indigo-300'
+                        : ''
+                    } ${
+                      isCorrect
+                        ? 'bg-green-500 hover:bg-green-600'
+                        : 'bg-red-500 hover:bg-red-600'
+                    }`}
+                  >
+                    {idx + 1}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          <button
-            onClick={onBackToTopics}
-            className="w-full py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition"
-          >
-            Back to Topics
-          </button>
+          {/* Single Question Review */}
+          <QuizQuestion
+            key={`result-${currentQuestionIndex}`}
+            question={unit.quiz[currentQuestionIndex]}
+            questionIndex={currentQuestionIndex}
+            selectedAnswer={quizAnswers[currentQuestionIndex]}
+            onAnswerSelect={() => {}} // No interaction in submitted state
+            onSpeakQuestion={speakQuestion}
+            isSubmitted={true}
+            correctAnswer={unit.quiz[currentQuestionIndex].correct}
+          />
+
+          {/* Results Navigation Controls */}
+          <div className="flex justify-between items-center mt-6">
+            <button
+              onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+              disabled={currentQuestionIndex === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={20} />
+              Previous
+            </button>
+
+            <div className="flex gap-3">
+              {currentQuestionIndex < unit.quiz.length - 1 ? (
+                <button
+                  onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition"
+                >
+                  Next
+                  <ChevronRight size={20} />
+                </button>
+              ) : (
+                <button
+                  onClick={onBackToTopics}
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition"
+                >
+                  Back to Topics
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -90,7 +164,23 @@ const QuizView = ({
           <div className="flex justify-between items-start gap-4">
             <div>
               <h2 className="text-3xl font-bold text-indigo-900">Unit {unit.id} Quiz</h2>
-              <p className="text-gray-600 mt-2">Test your knowledge</p>
+              <p className="text-gray-600 mt-2">
+                Question {currentQuestionIndex + 1} of {unit.quiz.length}
+              </p>
+              <div className="flex gap-2 mt-2">
+                {unit.quiz.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-3 h-3 rounded-full ${
+                      idx === currentQuestionIndex
+                        ? 'bg-indigo-600'
+                        : quizAnswers[idx] !== undefined
+                        ? 'bg-green-400'
+                        : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
             
             {/* Speech Controls */}
@@ -116,25 +206,49 @@ const QuizView = ({
           </div>
         </div>
 
-        {unit.quiz.map((question, qIdx) => (
-          <QuizQuestion
-            key={qIdx}
-            question={question}
-            questionIndex={qIdx}
-            selectedAnswer={quizAnswers[qIdx]}
-            onAnswerSelect={onQuizAnswer}
-            onSpeakQuestion={speakQuestion}
-            isSubmitted={false}
-            correctAnswer={question.correct}
-          />
-        ))}
-        <button
-          onClick={handleSubmit}
-          disabled={Object.keys(quizAnswers).length !== unit.quiz.length}
-          className="w-full py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          Submit Quiz
-        </button>
+        {/* Single Question Display */}
+        <QuizQuestion
+          key={currentQuestionIndex}
+          question={unit.quiz[currentQuestionIndex]}
+          questionIndex={currentQuestionIndex}
+          selectedAnswer={quizAnswers[currentQuestionIndex]}
+          onAnswerSelect={onQuizAnswer}
+          onSpeakQuestion={speakQuestion}
+          isSubmitted={false}
+          correctAnswer={unit.quiz[currentQuestionIndex].correct}
+        />
+
+        {/* Navigation Controls */}
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={handlePreviousQuestion}
+            disabled={isFirstQuestion}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft size={20} />
+            Previous
+          </button>
+
+          <div className="flex gap-3">
+            {!isLastQuestion ? (
+              <button
+                onClick={handleNextQuestion}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 transition"
+              >
+                Next
+                <ChevronRight size={20} />
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={!allQuestionsAnswered}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Submit Quiz
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
