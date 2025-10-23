@@ -1,4 +1,5 @@
 import { Volume2, Check, X } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 const QuizQuestion = ({ 
   question, 
@@ -9,19 +10,20 @@ const QuizQuestion = ({
   isSubmitted, 
   correctAnswer 
 }) => {
+  const { isDark } = useTheme();
   const handleSpeak = () => {
     onSpeakQuestion(question.question, question.options);
   };
 
   return (
-    <div className="mb-8 p-6 bg-gray-50 rounded-lg">
+    <div className={`mb-8 p-6 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
       <div className="flex items-start justify-between mb-4">
-        <p className="font-bold text-gray-800 flex-1">
+        <p className={`font-bold flex-1 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
           {questionIndex + 1}. {question.question}
         </p>
         <button
           onClick={handleSpeak}
-          className="ml-4 p-2 text-blue-600 hover:bg-blue-100 rounded transition flex-shrink-0"
+          className={`ml-4 p-2 rounded transition flex-shrink-0 ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
           title="Read question aloud"
         >
           <Volume2 size={16} />
@@ -36,16 +38,26 @@ const QuizQuestion = ({
           
           if (isSubmitted) {
             if (isCorrect) {
-              className += "bg-green-100 border-2 border-green-500";
+              className += isDark 
+                ? "bg-green-900/30 border-2 border-green-500" 
+                : "bg-green-100 border-2 border-green-500";
             } else if (isSelected) {
-              className += "bg-red-100 border-2 border-red-500";
+              className += isDark 
+                ? "bg-red-900/30 border-2 border-red-500" 
+                : "bg-red-100 border-2 border-red-500";
             } else {
-              className += "bg-white border-2 border-gray-200";
+              className += isDark 
+                ? "bg-gray-800 border-2 border-gray-600" 
+                : "bg-white border-2 border-gray-200";
             }
           } else {
             className += isSelected
-              ? "bg-indigo-100 border-2 border-indigo-500"
-              : "bg-white border-2 border-gray-200 hover:border-indigo-300 cursor-pointer";
+              ? (isDark 
+                  ? "bg-indigo-900/30 border-2 border-indigo-500" 
+                  : "bg-indigo-100 border-2 border-indigo-500")
+              : (isDark 
+                  ? "bg-gray-800 border-2 border-gray-600 hover:border-indigo-400 cursor-pointer" 
+                  : "bg-white border-2 border-gray-200 hover:border-indigo-300 cursor-pointer");
           }
           
           return (
@@ -59,11 +71,11 @@ const QuizQuestion = ({
                     onChange={() => onAnswerSelect(questionIndex, oIdx)}
                     className="mr-3"
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{option}</span>
                 </label>
               ) : (
                 <>
-                  <span className="text-gray-700">{option}</span>
+                  <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{option}</span>
                   {isCorrect && <Check className="text-green-600" size={20} />}
                   {isSelected && !isCorrect && <X className="text-red-600" size={20} />}
                 </>

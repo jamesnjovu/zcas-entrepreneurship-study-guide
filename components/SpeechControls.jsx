@@ -1,4 +1,5 @@
 import { Volume2, VolumeX, Play, Pause, Square } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 const SpeechControls = ({ 
   isSupported, 
@@ -21,10 +22,11 @@ const SpeechControls = ({
   onShowProgressBarChange,
   className = ""
 }) => {
+  const { isDark } = useTheme();
 
   if (!isSupported) {
     return (
-      <div className={`flex items-center gap-2 text-gray-500 ${className}`}>
+      <div className={`flex items-center gap-2 ${className} ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
         <VolumeX size={20} />
         <span className="text-sm">Text-to-speech not supported</span>
       </div>
@@ -34,11 +36,11 @@ const SpeechControls = ({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {/* Main controls */}
-      <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+      <div className={`flex items-center gap-1 rounded-lg p-1 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
         {!isSpeaking ? (
           <button
             onClick={onSpeak}
-            className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            className={`flex items-center gap-1 px-3 py-1 text-white rounded transition ${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
             title="Read current page aloud and automatically advance to next page when finished"
           >
             <Volume2 size={16} />
@@ -51,7 +53,7 @@ const SpeechControls = ({
             {!isPaused ? (
               <button
                 onClick={onPause}
-                className="p-1 text-blue-600 hover:bg-blue-100 rounded transition"
+                className={`p-1 rounded transition ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
                 title="Pause"
               >
                 <Pause size={16} />
@@ -59,7 +61,7 @@ const SpeechControls = ({
             ) : (
               <button
                 onClick={onResume}
-                className="p-1 text-blue-600 hover:bg-blue-100 rounded transition"
+                className={`p-1 rounded transition ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
                 title="Resume"
               >
                 <Play size={16} />
@@ -67,7 +69,7 @@ const SpeechControls = ({
             )}
             <button
               onClick={onStop}
-              className="p-1 text-red-600 hover:bg-red-100 rounded transition"
+              className={`p-1 rounded transition ${isDark ? 'text-red-400 hover:bg-gray-600' : 'text-red-600 hover:bg-red-100'}`}
               title="Stop"
             >
               <Square size={16} />

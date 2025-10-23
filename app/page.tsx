@@ -8,6 +8,7 @@ import QuizView from '../components/QuizView';
 import PastExamView from '../components/PastExamView';
 import SettingsView from '../components/SettingsView';
 import ProgressView from '../components/ProgressView';
+import InitialLoader from '../components/InitialLoader';
 import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideContext';
 import { pastExamQuestions } from '../data/pastExamQuestions';
 import { useTheme } from '../hooks/useTheme';
@@ -45,18 +46,7 @@ const StudyGuideContent = () => {
 
   // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
   if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <span className="ml-2 text-gray-600">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <InitialLoader />;
   }
 
   const onUnitSelect = (unit: any) => {

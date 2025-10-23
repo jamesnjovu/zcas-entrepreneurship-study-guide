@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { BookOpen, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Volume2, Eye, EyeOff, Info } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
+import { useTheme } from '../hooks/useTheme';
 import SpeechControls from './SpeechControls';
 
 const PastExamView = ({ 
@@ -10,6 +11,8 @@ const PastExamView = ({
   const [selectedExam, setSelectedExam] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showModelAnswers, setShowModelAnswers] = useState(false);
+  
+  const { isDark } = useTheme();
 
   // Helper function to render text with line breaks
   const renderTextWithLineBreaks = (text) => {
@@ -124,10 +127,52 @@ const PastExamView = ({
       return `${page.content.title}. ${page.content.courseName}. Instructions: ${page.content.instructions.join('. ')}`;
     } else if (page.type === 'sectionInfo') {
       return `${page.content.title}. ${page.content.instructions}`;
-    } else if (page.content.context) {
-      return `Context: ${page.content.context}. Question: ${page.content.question || 'This question has multiple parts'}`;
     } else {
-      return page.content.question || 'This question has multiple parts';
+      // Build question text
+      let text = '';
+      
+      if (page.content.context) {
+        text += `Context: ${page.content.context}. `;
+      }
+      
+      // Add main question
+      if (page.content.question) {
+        text += `Question: ${page.content.question}. `;
+      } else if (page.content.totalMarks) {
+        text += `This question has multiple parts. `;
+      }
+      
+      // Add parts if they exist
+      if (page.content.parts) {
+        page.content.parts.forEach((part, idx) => {
+          const partLabel = String.fromCharCode(97 + idx); // a, b, c, etc.
+          text += `Part ${partLabel}: ${part.question}. `;
+          
+          // Add model answer if it exists
+          if (part.modelAnswer) {
+            text += `Model Answer: `;
+            if (Array.isArray(part.modelAnswer)) {
+              text += part.modelAnswer.join('. ') + '. ';
+            } else {
+              // Clean up newlines for speech
+              const cleanAnswer = part.modelAnswer.replace(/\n/g, '. ');
+              text += cleanAnswer + '. ';
+            }
+          }
+        });
+      } else if (page.content.modelAnswer) {
+        // Single question with model answer
+        text += `Model Answer: `;
+        if (Array.isArray(page.content.modelAnswer)) {
+          text += page.content.modelAnswer.join('. ') + '. ';
+        } else {
+          // Clean up newlines for speech
+          const cleanAnswer = page.content.modelAnswer.replace(/\n/g, '. ');
+          text += cleanAnswer + '. ';
+        }
+      }
+      
+      return text || 'This question has multiple parts';
     }
   };
 
@@ -162,17 +207,17 @@ const PastExamView = ({
       <div>
         <button
           onClick={onBackToHome}
-          className="mb-4 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition text-indigo-600 font-semibold"
+          className={`mb-4 px-4 py-2 rounded-lg shadow hover:shadow-md transition font-semibold ${isDark ? 'bg-gray-800 text-indigo-400 hover:bg-gray-700' : 'bg-white text-indigo-600'}`}
         >
           <ChevronLeft className="inline mr-2" size={16} />
           Back to Home
         </button>
         
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className={`rounded-lg shadow-lg p-8 ${isDark ? 'bg-gray-800 text-white' : 'bg-white'}`}>
           <div className="text-center mb-8">
             <BookOpen size={64} className="mx-auto mb-4 text-indigo-600" />
             <h2 className="text-3xl font-bold text-indigo-900 mb-2">Past Exam Questions</h2>
-            <p className="text-gray-600">Study previous exam papers with model answers</p>
+            <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>Study previous exam papers with model answers</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -187,16 +232,16 @@ const PastExamView = ({
                   <span className="text-sm text-indigo-600 font-semibold">{exam.year}</span>
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition">
+                <h3 className={`text-xl font-bold mb-2 group-hover:text-indigo-600 transition ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
                   {exam.examInfo.courseName}
                 </h3>
                 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-gray-600">
+                  <div className={`flex items-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                     <Clock className="mr-2" size={16} />
                     <span className="text-sm">{exam.examInfo.duration}</span>
                   </div>
-                  <div className="flex items-center text-gray-600">
+                  <div className={`flex items-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                     <FileText className="mr-2" size={16} />
                     <span className="text-sm">{exam.sections.length} sections</span>
                   </div>
@@ -221,13 +266,13 @@ const PastExamView = ({
     <div>
       <button
         onClick={handleBackToExamList}
-        className="mb-4 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition text-indigo-600 font-semibold"
+        className={`mb-4 px-4 py-2 rounded-lg shadow hover:shadow-md transition font-semibold ${isDark ? 'bg-gray-800 text-indigo-400 hover:bg-gray-700' : 'bg-white text-indigo-600'}`}
       >
         <ChevronLeft className="inline mr-2" size={16} />
         Back to Past Exams
       </button>
       
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className={`rounded-lg shadow-lg p-8 ${isDark ? 'bg-gray-800 text-white' : 'bg-white'}`}>
         {/* Progress Header */}
         <div className="mb-6">
           <div className="flex justify-between items-start gap-4">
@@ -368,7 +413,7 @@ const PastExamView = ({
                 <h3 className="text-2xl font-bold mb-2">{currentPage.content.title}</h3>
                 <p className="text-lg">{currentPage.content.instructions}</p>
                 <div className="mt-4">
-                  <span className="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm">
+                  <span className={`px-4 py-2 rounded-full text-sm ${isDark ? 'bg-gray-700 bg-opacity-70' : 'bg-white bg-opacity-20'}`}>
                     {currentPage.content.marks} marks total
                   </span>
                 </div>
@@ -495,7 +540,7 @@ const PastExamView = ({
                   </div>
 
                   {currentPage.content.parts.map((part, idx) => (
-                    <div key={part.part || idx} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <div key={part.part || idx} className={`rounded-lg p-6 shadow-sm ${isDark ? 'bg-gray-700 border border-gray-600' : 'bg-white border border-gray-200'}`}>
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-3">
                           <h4 className="text-lg font-semibold text-gray-800">

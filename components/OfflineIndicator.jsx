@@ -14,7 +14,7 @@ const OfflineIndicator = () => {
         <WifiOff size={16} className="text-red-500" />
         <span className="text-sm font-medium">You're offline</span>
       </div>
-      <p className="text-xs text-gray-500 mt-1">
+      <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
         Some features may be limited
       </p>
     </div>
