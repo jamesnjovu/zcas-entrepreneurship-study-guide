@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Play, Pause, Square, Volume2, X } from 'lucide-react';
 import { useApp } from '../store';
 
@@ -45,7 +45,7 @@ const FloatingProgressBar = ({
   }, []);
 
   // Add global mouse event listeners when dragging
-  useState(() => {
+  useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
@@ -71,17 +71,17 @@ const FloatingProgressBar = ({
         <div className="flex items-center gap-4 p-4">
           {/* Play/Pause/Stop Controls */}
           <div className="flex items-center gap-2">
-            {isSpeaking ? (
+            {isSpeaking && !isPaused ? (
               <button
-                onClick={isPaused ? onPlay : onPause}
+                onClick={onPause}
                 className={`p-2 rounded-full transition-colors ${
                   isDark 
                     ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 }`}
-                title={isPaused ? 'Resume' : 'Pause'}
+                title="Pause"
               >
-                {isPaused ? <Play size={16} /> : <Pause size={16} />}
+                <Pause size={16} />
               </button>
             ) : (
               <button
@@ -91,7 +91,7 @@ const FloatingProgressBar = ({
                     ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 }`}
-                title="Play"
+                title={isPaused ? 'Resume' : 'Play'}
               >
                 <Play size={16} />
               </button>

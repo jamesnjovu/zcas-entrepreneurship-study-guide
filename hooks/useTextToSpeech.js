@@ -14,6 +14,8 @@ export const useTextToSpeech = () => {
   const [showProgressBar, setShowProgressBar] = useState(true);
   const [autoStart, setAutoStart] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [userStoppedPlayback, setUserStoppedPlayback] = useState(false);
+  const [userPausedForAutoStart, setUserPausedForAutoStart] = useState(false);
   
   const utteranceRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -195,12 +197,17 @@ export const useTextToSpeech = () => {
     }
   }, [selectedVoice, rate, pitch, clearProgress]);
 
-  const speak = useCallback((text, onComplete = null) => {
+  const speak = useCallback((text, onComplete = null, isManualStart = false) => {
     if (!isSupported || !text) return;
 
     // Cancel any ongoing speech and clear progress
     speechSynthesis.cancel();
     clearProgress();
+
+    // Reset user stopped flag if this is a manual start
+    if (isManualStart) {
+      setUserStoppedPlayback(false);
+    }
 
     // Store full text and create chunks for seeking
     fullTextRef.current = text;
@@ -266,13 +273,41 @@ export const useTextToSpeech = () => {
     if (!isSupported) return;
     speechSynthesis.pause();
     setIsPaused(true);
+    
+    // Stop progress bar movement when paused
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    
+    // Set flag to prevent auto-start only (not auto-advance)
+    setUserPausedForAutoStart(true);
   }, [isSupported]);
 
   const resume = useCallback(() => {
     if (!isSupported) return;
     speechSynthesis.resume();
     setIsPaused(false);
-  }, [isSupported]);
+    
+    // Reset flags when manually resuming (re-enable auto-start)
+    setUserStoppedPlayback(false);
+    setUserPausedForAutoStart(false);
+    
+    // Restart progress bar when resumed
+    if (fullTextRef.current && !progressIntervalRef.current) {
+      const currentProgress = progress;
+      const remainingProgress = 100 - currentProgress;
+      const estimatedRemainingDuration = (fullTextRef.current.length * (remainingProgress / 100) / (rate * 10)) * 1000;
+      
+      let resumeStartTime = Date.now();
+      
+      progressIntervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - resumeStartTime;
+        const additionalProgress = Math.min((elapsed / estimatedRemainingDuration) * remainingProgress, remainingProgress);
+        setProgress(currentProgress + additionalProgress);
+      }, 100);
+    }
+  }, [isSupported, progress, rate]);
 
   const stop = useCallback(() => {
     if (!isSupported) return;
@@ -281,7 +316,16 @@ export const useTextToSpeech = () => {
     setIsPaused(false);
     clearProgress();
     onCompleteRef.current = null;
+    
+    // Mark that user manually stopped playback to prevent auto-start
+    setUserStoppedPlayback(true);
   }, [isSupported, clearProgress]);
+
+  // Function to reset user stopped flag when changing content
+  const resetUserStoppedFlag = useCallback(() => {
+    setUserStoppedPlayback(false);
+    setUserPausedForAutoStart(false);
+  }, []);
 
   const speakContent = useCallback((topic) => {
     if (!topic || !isSupported) return;
@@ -322,6 +366,7 @@ export const useTextToSpeech = () => {
     autoAdvance,
     showProgressBar,
     autoStart,
+    userStoppedPlayback: userStoppedPlayback || userPausedForAutoStart, // Combine flags for auto-start prevention
     setSelectedVoice,
     setRate,
     setPitch,
@@ -333,6 +378,7 @@ export const useTextToSpeech = () => {
     resume,
     stop,
     seek,
+    resetUserStoppedFlag,
     speakContent,
     speakQuestion,
   };

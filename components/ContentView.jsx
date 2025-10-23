@@ -2,7 +2,8 @@ import { ChevronLeft, ChevronRight, Award, Check } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { useApp } from '../store';
 import SpeechControls from './SpeechControls';
-import { useEffect, useRef } from 'react';
+import FloatingProgressBar from './FloatingProgressBar';
+import { useEffect, useRef, useState } from 'react';
 
 const ContentView = ({ 
   topic, 
@@ -28,6 +29,7 @@ const ContentView = ({
     autoAdvance,
     showProgressBar,
     autoStart,
+    userStoppedPlayback,
     setSelectedVoice,
     setRate,
     setPitch,
@@ -38,10 +40,13 @@ const ContentView = ({
     pause,
     resume,
     stop,
+    seek,
+    resetUserStoppedFlag,
     speakContent,
   } = useTextToSpeech();
 
   const { theme: { isDark } } = useApp();
+  const [showFloatingBar, setShowFloatingBar] = useState(true);
   const readingStartTime = useRef(null);
   const trackReadingTimeRef = useRef(trackReadingTime);
 
@@ -54,6 +59,8 @@ const ContentView = ({
     if (!isLastTopic && autoAdvance) {
       setTimeout(() => {
         handleTopicCompletion();
+        // Reset user stopped flag before advancing to allow auto-start on next topic
+        resetUserStoppedFlag();
         onNextTopic();
       }, 1000);
     }
@@ -90,7 +97,7 @@ const ContentView = ({
       });
     });
     
-    speak(textToSpeak, autoAdvance && !isLastTopic ? handleAutoAdvanceToNextTopic : null);
+    speak(textToSpeak, autoAdvance && !isLastTopic ? handleAutoAdvanceToNextTopic : null, true);
   };
 
   // Track reading start time and auto-start speech
@@ -99,7 +106,8 @@ const ContentView = ({
       // Start tracking reading time
       readingStartTime.current = Date.now();
       
-      if (autoStart) {
+      // Only auto-start if enabled and user hasn't manually stopped playback
+      if (autoStart && !userStoppedPlayback) {
         // Delay to ensure component is fully rendered
         const timer = setTimeout(() => {
           handleSpeak();
@@ -108,7 +116,14 @@ const ContentView = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [topic, autoStart, handleSpeak]);
+  }, [topic, autoStart, userStoppedPlayback, handleSpeak]);
+
+  // Separate effect to reset user stopped flag only when topic ID actually changes
+  useEffect(() => {
+    if (topic?.id) {
+      resetUserStoppedFlag();
+    }
+  }, [topic?.id, resetUserStoppedFlag]);
 
   // Separate effect for tracking reading time on topic change or unmount
   useEffect(() => {
@@ -176,30 +191,6 @@ const ContentView = ({
             </div>
           </div>
           
-          {/* Speech Progress Bar */}
-          {showProgressBar && (isSpeaking || progress > 0) && (
-            <div className={`mt-4 ${isDark ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-lg`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                  {isSpeaking ? 'Reading...' : 'Speech Complete'}
-                </span>
-                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {Math.round(progress)}%
-                </span>
-              </div>
-              <div className={`w-full ${isDark ? 'bg-gray-600' : 'bg-gray-200'} rounded-full h-2`}>
-                <div 
-                  className={`${isDark ? 'bg-indigo-500' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-300 ease-out`}
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              {currentText && (
-                <p className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'} mt-2 line-clamp-2`}>
-                  {currentText.length > 100 ? `${currentText.substring(0, 100)}...` : currentText}
-                </p>
-              )}
-            </div>
-          )}
         </div>
         
         {topic.content.map((section, idx) => (
@@ -253,6 +244,21 @@ const ContentView = ({
           </div>
         </div>
       </div>
+
+      {/* Floating Progress Bar */}
+      <FloatingProgressBar
+        isSupported={isSupported}
+        isSpeaking={isSpeaking}
+        isPaused={isPaused}
+        progress={progress}
+        currentText={currentText}
+        onPlay={isPaused ? resume : handleSpeak}
+        onPause={pause}
+        onStop={stop}
+        onSeek={seek}
+        onClose={() => setShowFloatingBar(false)}
+        isVisible={showFloatingBar && showProgressBar && (isSpeaking || isPaused || progress > 0)}
+      />
     </div>
   );
 };
