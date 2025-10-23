@@ -1,0 +1,21 @@
+{
+  "name": "ZCAS Entrepreneurship Study Guide",
+  "short_name": "ZCAS Study Guide",
+  "description": "Interactive study guide for ZCAS University's Innovation & Entrepreneurship course",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/next.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
