@@ -128,7 +128,7 @@ const ContentView = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [topic.id, autoStart, userStoppedPlayback, handleSpeak]); // Need handleSpeak but let's see if the issue persists
+  }, [topic.id, autoStart, userStoppedPlayback, handleSpeak]);
 
   // Separate effect to reset user stopped flag only when topic ID actually changes
   useEffect(() => {

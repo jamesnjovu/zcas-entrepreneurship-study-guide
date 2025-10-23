@@ -13,6 +13,7 @@ import { AppProvider, useApp } from '../store';
 import { pastExamQuestions } from '../data/pastExamQuestions';
 import { studyData } from '../data/studyData';
 import OfflineIndicator from '../components/OfflineIndicator';
+import PWAInstaller from '../components/PWAInstaller';
 
 const StudyGuideContent = () => {
   const {
@@ -136,6 +137,9 @@ const StudyGuideContent = () => {
       
       {/* Offline Indicator */}
       <OfflineIndicator />
+      
+      {/* PWA Installer */}
+      <PWAInstaller />
     </div>
   );
 };
