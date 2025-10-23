@@ -31,7 +31,6 @@ export const useTextToSpeech = () => {
         const savedSettings = localStorage.getItem('speechSettings');
         if (savedSettings) {
           const settings = JSON.parse(savedSettings);
-          console.log('Loading settings:', settings); // Debug log
           setRate(settings.rate || 1);
           setPitch(settings.pitch || 1);
           setAutoAdvance(settings.autoAdvance !== undefined ? settings.autoAdvance : true);
@@ -40,7 +39,6 @@ export const useTextToSpeech = () => {
         }
         setSettingsLoaded(true);
       } catch (error) {
-        console.log('Error loading speech settings:', error);
         setSettingsLoaded(true);
       }
     } else {
@@ -65,10 +63,9 @@ export const useTextToSpeech = () => {
             const settings = JSON.parse(savedSettings);
             if (settings.selectedVoiceName) {
               targetVoice = availableVoices.find(voice => voice.name === settings.selectedVoiceName);
-              console.log('Restoring voice:', settings.selectedVoiceName, 'Found:', targetVoice?.name); // Debug log
             }
           } catch (error) {
-            console.log('Error parsing saved voice:', error);
+            // Silently handle voice parsing errors
           }
         }
         
@@ -77,7 +74,6 @@ export const useTextToSpeech = () => {
         }
         
         setSelectedVoice(targetVoice);
-        console.log('Set selected voice to:', targetVoice?.name); // Debug log
       };
 
       loadVoices();
@@ -102,9 +98,8 @@ export const useTextToSpeech = () => {
           selectedVoiceName: selectedVoice?.name || null
         };
         localStorage.setItem('speechSettings', JSON.stringify(settings));
-        console.log('Saving settings:', settings); // Debug log
       } catch (error) {
-        console.log('Error saving speech settings:', error);
+        // Silently handle settings save errors
       }
     }
   }, [rate, pitch, autoAdvance, showProgressBar, autoStart, selectedVoice, settingsLoaded]);

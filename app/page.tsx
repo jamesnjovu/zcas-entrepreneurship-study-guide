@@ -59,7 +59,6 @@ const StudyGuideContent = () => {
   };
 
   const onSubmitQuiz = (answers: any) => {
-    console.log('Quiz submitted - Answers:', answers);
     submitQuiz(answers);
   };
 
