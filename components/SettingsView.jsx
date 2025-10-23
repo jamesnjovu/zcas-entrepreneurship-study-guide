@@ -1,6 +1,6 @@
 import { ChevronLeft, Volume2, Settings2, Zap, Eye, SkipForward, Play, Monitor, Sun, Moon } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const SettingsView = ({ onBack }) => {
   const {
@@ -20,7 +20,7 @@ const SettingsView = ({ onBack }) => {
     setAutoStart,
   } = useTextToSpeech();
 
-  const { theme, isDark, toggleTheme, setThemeMode, mounted } = useTheme();
+  const { theme: { theme, isDark }, setTheme, toggleTheme } = useApp();
 
   if (!isSupported) {
     return (
@@ -255,7 +255,7 @@ const SettingsView = ({ onBack }) => {
                       name="theme"
                       value={value}
                       checked={theme === value}
-                      onChange={(e) => setThemeMode(e.target.value)}
+                      onChange={(e) => setTheme(e.target.value)}
                       className="w-4 h-4 text-indigo-600"
                     />
                     <div className="flex items-center gap-2">

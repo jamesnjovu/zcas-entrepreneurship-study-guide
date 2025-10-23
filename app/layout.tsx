@@ -22,29 +22,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const themeScript = `
-    (function() {
-      function getTheme() {
-        if (typeof localStorage !== 'undefined') {
-          const saved = localStorage.getItem('theme');
-          if (saved === 'dark') return 'dark';
-          if (saved === 'light') return 'light';
-        }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-      
-      const theme = getTheme();
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
-    })();
-  `;
-
   return (
     <html lang="en">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+      <head></head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { BookOpen, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Volume2, Eye, EyeOff, Info } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 import SpeechControls from './SpeechControls';
 
 const PastExamView = ({ 
@@ -12,7 +12,7 @@ const PastExamView = ({
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showModelAnswers, setShowModelAnswers] = useState(false);
   
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
 
   // Helper function to render text with line breaks
   const renderTextWithLineBreaks = (text) => {

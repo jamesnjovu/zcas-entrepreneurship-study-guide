@@ -1,9 +1,9 @@
 import TopicCard from './TopicCard';
 import QuizCard from './QuizCard';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const TopicsView = ({ unit, onTopicSelect, onStartQuiz }) => {
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
   
   return (
     <div>

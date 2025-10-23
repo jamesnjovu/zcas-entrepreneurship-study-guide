@@ -9,40 +9,38 @@ import PastExamView from '../components/PastExamView';
 import SettingsView from '../components/SettingsView';
 import ProgressView from '../components/ProgressView';
 import InitialLoader from '../components/InitialLoader';
-import { StudyGuideProvider, useStudyGuideContext } from '../context/StudyGuideContext';
+import { AppProvider, useApp } from '../store';
 import { pastExamQuestions } from '../data/pastExamQuestions';
-import { useTheme } from '../hooks/useTheme';
-import { useProgress } from '../hooks/useProgress';
+import { studyData } from '../data/studyData';
 import OfflineIndicator from '../components/OfflineIndicator';
 
 const StudyGuideContent = () => {
   const {
-    currentView,
-    selectedUnit,
-    selectedTopic,
-    quizAnswers,
-    quizSubmitted,
-    quizScore,
-    studyData,
-    handleUnitSelect,
-    handleTopicSelect,
-    handleStartQuiz,
-    handleQuizAnswer,
-    handleSubmitQuiz,
-    handleBackToHome,
-    handleBackToTopics,
-    handlePastExamSelect,
-    handleSettingsSelect,
-    handleProgressSelect,
-    handleNextTopic,
-    handlePreviousTopic,
+    // State
+    theme: { isDark, mounted },
+    study: { currentView, selectedUnit, selectedTopic, quizAnswers, quizSubmitted, quizScore },
+    
+    // Actions
+    selectUnit,
+    selectTopic,
+    setQuizAnswer,
+    submitQuiz,
+    resetQuiz,
+    goHome,
+    backToTopics,
+    goToPastExams,
+    goToSettings,
+    goToProgress,
+    startQuiz,
+    navigateToNextTopic,
+    navigateToPreviousTopic,
+    markTopicCompleted,
+    trackReadingTime,
+    
+    // Computed
     isFirstTopic,
     isLastTopic,
-    resetQuiz
-  } = useStudyGuideContext();
-
-  const { isDark, mounted } = useTheme();
-  const { markTopicCompleted, saveQuizResult, trackReadingTime } = useProgress();
+  } = useApp();
 
   // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
   if (!mounted) {
@@ -50,47 +48,37 @@ const StudyGuideContent = () => {
   }
 
   const onUnitSelect = (unit: any) => {
-    handleUnitSelect(unit);
-    resetQuiz();
+    selectUnit(unit);
   };
 
   const onStartQuiz = () => {
-    resetQuiz();
-    handleStartQuiz();
+    startQuiz();
   };
 
   const onSubmitQuiz = (answers: any) => {
-    const score = handleSubmitQuiz(answers);
-    console.log('Quiz submitted - Score:', score, 'Answers:', answers);
-    
-    // Save quiz result to progress tracking
-    if (selectedUnit && selectedUnit.quiz) {
-      console.log('Saving quiz result for unit:', selectedUnit.id);
-      saveQuizResult(selectedUnit.id, score, selectedUnit.quiz.questions.length, answers);
-    } else {
-      console.log('No unit or quiz found for saving result');
-    }
+    console.log('Quiz submitted - Answers:', answers);
+    submitQuiz(answers);
   };
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <Header currentView={currentView} onBackToHome={handleBackToHome} />
+        <Header currentView={currentView} onBackToHome={goHome} />
         
         {currentView === 'home' && (
           <HomeView 
             units={studyData.units} 
             onUnitSelect={onUnitSelect} 
-            onPastExamSelect={handlePastExamSelect}
-            onSettingsSelect={handleSettingsSelect}
-            onProgressSelect={handleProgressSelect}
+            onPastExamSelect={goToPastExams}
+            onSettingsSelect={goToSettings}
+            onProgressSelect={goToProgress}
           />
         )}
         
         {currentView === 'topics' && selectedUnit && (
           <TopicsView 
             unit={selectedUnit} 
-            onTopicSelect={handleTopicSelect} 
+            onTopicSelect={selectTopic} 
             onStartQuiz={onStartQuiz} 
           />
         )}
@@ -98,9 +86,9 @@ const StudyGuideContent = () => {
         {currentView === 'content' && selectedTopic && (
           <ContentView 
             topic={selectedTopic} 
-            onBackToTopics={handleBackToTopics}
-            onNextTopic={handleNextTopic}
-            onPreviousTopic={handlePreviousTopic}
+            onBackToTopics={backToTopics}
+            onNextTopic={navigateToNextTopic}
+            onPreviousTopic={navigateToPreviousTopic}
             onStartQuiz={onStartQuiz}
             isFirstTopic={isFirstTopic()}
             isLastTopic={isLastTopic()}
@@ -115,28 +103,28 @@ const StudyGuideContent = () => {
             quizAnswers={quizAnswers}
             quizSubmitted={quizSubmitted}
             quizScore={quizScore}
-            onQuizAnswer={handleQuizAnswer}
+            onQuizAnswer={setQuizAnswer}
             onSubmitQuiz={onSubmitQuiz}
-            onBackToTopics={handleBackToTopics}
+            onBackToTopics={backToTopics}
           />
         )}
 
         {currentView === 'pastExam' && (
           <PastExamView 
             pastExamQuestions={pastExamQuestions}
-            onBackToHome={handleBackToHome}
+            onBackToHome={goHome}
           />
         )}
 
         {currentView === 'settings' && (
           <SettingsView 
-            onBack={handleBackToHome}
+            onBack={goHome}
           />
         )}
 
         {currentView === 'progress' && (
           <ProgressView 
-            onBack={handleBackToHome}
+            onBack={goHome}
           />
         )}
       </div>
@@ -150,9 +138,9 @@ const StudyGuideContent = () => {
 const StudyGuideApp = () => {
   return (
     <ErrorBoundary>
-      <StudyGuideProvider>
+      <AppProvider>
         <StudyGuideContent />
-      </StudyGuideProvider>
+      </AppProvider>
     </ErrorBoundary>
   );
 };

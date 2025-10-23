@@ -1,10 +1,11 @@
 import { Wifi, WifiOff } from 'lucide-react';
-import { useOffline } from '../hooks/useOffline';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const OfflineIndicator = () => {
-  const { isOnline } = useOffline();
-  const { isDark } = useTheme();
+  const { 
+    theme: { isDark },
+    offline: { isOnline }
+  } = useApp();
 
   if (isOnline) return null;
 

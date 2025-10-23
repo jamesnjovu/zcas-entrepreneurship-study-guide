@@ -1,8 +1,8 @@
 import { Home } from 'lucide-react';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const Header = ({ currentView, onBackToHome }) => {
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
   
   return (
     <div className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow-lg p-6 mb-6`}>

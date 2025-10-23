@@ -1,7 +1,7 @@
 import { Award, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 import SpeechControls from './SpeechControls';
 import QuizQuestion from './QuizQuestion';
 
@@ -15,7 +15,7 @@ const QuizView = ({
   onBackToTopics 
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
   
   const {
     isSupported,

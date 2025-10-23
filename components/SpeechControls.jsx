@@ -1,5 +1,5 @@
 import { Volume2, VolumeX, Play, Pause, Square } from 'lucide-react';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const SpeechControls = ({ 
   isSupported, 
@@ -22,7 +22,7 @@ const SpeechControls = ({
   onShowProgressBarChange,
   className = ""
 }) => {
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
 
   if (!isSupported) {
     return (

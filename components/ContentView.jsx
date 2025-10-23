@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Award, Check } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 import SpeechControls from './SpeechControls';
 import { useEffect, useRef } from 'react';
 
@@ -41,7 +41,7 @@ const ContentView = ({
     speakContent,
   } = useTextToSpeech();
 
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
   const readingStartTime = useRef(null);
   const trackReadingTimeRef = useRef(trackReadingTime);
 

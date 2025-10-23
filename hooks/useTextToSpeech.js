@@ -18,6 +18,9 @@ export const useTextToSpeech = () => {
   const utteranceRef = useRef(null);
   const progressIntervalRef = useRef(null);
   const onCompleteRef = useRef(null);
+  const fullTextRef = useRef('');
+  const textChunksRef = useRef([]);
+  const currentChunkIndexRef = useRef(0);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -119,12 +122,90 @@ export const useTextToSpeech = () => {
     setProgress(0);
   }, []);
 
+  // Split text into seekable chunks
+  const splitTextIntoChunks = useCallback((text) => {
+    const sentences = text.match(/[^\.!?]+[\.!?]+/g) || [text];
+    return sentences.map(s => s.trim()).filter(s => s.length > 0);
+  }, []);
+
+  const seek = useCallback((percentage) => {
+    if (!fullTextRef.current || !textChunksRef.current.length) return;
+
+    const targetIndex = Math.floor((percentage / 100) * textChunksRef.current.length);
+    const clampedIndex = Math.max(0, Math.min(textChunksRef.current.length - 1, targetIndex));
+    
+    currentChunkIndexRef.current = clampedIndex;
+    
+    // Stop current speech and start from new position
+    speechSynthesis.cancel();
+    
+    const remainingText = textChunksRef.current.slice(clampedIndex).join(' ');
+    setProgress(percentage);
+    
+    if (remainingText) {
+      const utterance = new SpeechSynthesisUtterance(remainingText);
+      utteranceRef.current = utterance;
+      
+      if (selectedVoice) utterance.voice = selectedVoice;
+      utterance.rate = rate;
+      utterance.pitch = pitch;
+      
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+        setIsPaused(false);
+        
+        const remainingChunks = textChunksRef.current.length - clampedIndex;
+        const totalChunks = textChunksRef.current.length;
+        const startProgress = (clampedIndex / totalChunks) * 100;
+        
+        let startTime = Date.now();
+        const estimatedDuration = (remainingText.length / (rate * 10)) * 1000;
+        
+        progressIntervalRef.current = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const chunkProgress = Math.min((elapsed / estimatedDuration) * (100 - startProgress), 100 - startProgress);
+          setProgress(startProgress + chunkProgress);
+        }, 100);
+      };
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        setIsPaused(false);
+        setProgress(100);
+        clearProgress();
+        
+        if (onCompleteRef.current) {
+          setTimeout(() => {
+            if (onCompleteRef.current) {
+              onCompleteRef.current();
+              onCompleteRef.current = null;
+            }
+          }, 500);
+        }
+      };
+      
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        setIsPaused(false);
+        clearProgress();
+        onCompleteRef.current = null;
+      };
+      
+      speechSynthesis.speak(utterance);
+    }
+  }, [selectedVoice, rate, pitch, clearProgress]);
+
   const speak = useCallback((text, onComplete = null) => {
     if (!isSupported || !text) return;
 
     // Cancel any ongoing speech and clear progress
     speechSynthesis.cancel();
     clearProgress();
+
+    // Store full text and create chunks for seeking
+    fullTextRef.current = text;
+    textChunksRef.current = splitTextIntoChunks(text);
+    currentChunkIndexRef.current = 0;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utteranceRef.current = utterance;
@@ -251,6 +332,7 @@ export const useTextToSpeech = () => {
     pause,
     resume,
     stop,
+    seek,
     speakContent,
     speakQuestion,
   };

@@ -1,5 +1,5 @@
 import { Volume2, Check, X } from 'lucide-react';
-import { useTheme } from '../hooks/useTheme';
+import { useApp } from '../store';
 
 const QuizQuestion = ({ 
   question, 
@@ -10,7 +10,7 @@ const QuizQuestion = ({
   isSubmitted, 
   correctAnswer 
 }) => {
-  const { isDark } = useTheme();
+  const { theme: { isDark } } = useApp();
   const handleSpeak = () => {
     onSpeakQuestion(question.question, question.options);
   };
