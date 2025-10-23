@@ -9,7 +9,7 @@ import PastExamView from '../components/PastExamView';
 import SettingsView from '../components/SettingsView';
 import ProgressView from '../components/ProgressView';
 import InitialLoader from '../components/InitialLoader';
-import { AppProvider, useApp } from '../store';
+import { AppProvider, useApp, useThemeColors } from '../store';
 import { pastExamQuestions } from '../data/pastExamQuestions';
 import { studyData } from '../data/studyData';
 import OfflineIndicator from '../components/OfflineIndicator';
@@ -46,6 +46,9 @@ const StudyGuideContent = () => {
     getNextUnit,
   } = useApp();
 
+  // Get theme colors
+  const colors = useThemeColors(isDark) as any;
+
   // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
   if (!mounted) {
     return <InitialLoader />;
@@ -64,7 +67,7 @@ const StudyGuideContent = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+    <div className={`min-h-screen ${colors.get('gradient.appBackground')}`}>
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Header currentView={currentView} onBackToHome={goHome} />
         

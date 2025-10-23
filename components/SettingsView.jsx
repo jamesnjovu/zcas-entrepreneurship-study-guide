@@ -207,7 +207,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={autoStart}
                       onChange={(e) => setAutoStart(e.target.checked)}
-                      className="w-6 h-6 md:w-5 md:h-5 text-green-600 rounded focus:ring-green-500 touch-manipulation"
+                      className={`w-6 h-6 md:w-5 md:h-5 ${colors.conditional('text-green-600', 'text-green-500')} rounded ${colors.conditional('focus:ring-green-500', 'focus:ring-green-400')} touch-manipulation`}
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Auto-start speech</span>
@@ -232,7 +232,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={autoAdvance}
                       onChange={(e) => setAutoAdvance(e.target.checked)}
-                      className="w-6 h-6 md:w-5 md:h-5 text-blue-600 rounded focus:ring-blue-500 touch-manipulation"
+                      className={`w-6 h-6 md:w-5 md:h-5 ${colors.conditional('text-blue-600', 'text-blue-500')} rounded ${colors.conditional('focus:ring-blue-500', 'focus:ring-blue-400')} touch-manipulation`}
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Auto-advance pages</span>
@@ -257,7 +257,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={showProgressBar}
                       onChange={(e) => setShowProgressBar(e.target.checked)}
-                      className="w-6 h-6 md:w-5 md:h-5 text-purple-600 rounded focus:ring-purple-500 touch-manipulation"
+                      className={`w-6 h-6 md:w-5 md:h-5 ${colors.conditional('text-purple-600', 'text-purple-500')} rounded ${colors.conditional('focus:ring-purple-500', 'focus:ring-purple-400')} touch-manipulation`}
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Show progress bar</span>

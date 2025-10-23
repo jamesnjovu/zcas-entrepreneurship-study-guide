@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { Download, X } from 'lucide-react';
-import { useApp } from '../store';
+import { useApp, useThemeColors } from '../store';
 
 const PWAInstaller = () => {
   const { theme: { isDark } } = useApp();
+  const colors = useThemeColors(isDark);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -98,13 +99,16 @@ const PWAInstaller = () => {
 
   return (
     <div className={`fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50 ${
-      isDark ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-800 border-gray-200'
+      colors.conditional(
+        'bg-white text-gray-800 border-gray-200',
+        'bg-gray-800 text-white border-gray-700'
+      )
     } border rounded-lg shadow-lg p-4`}>
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-lg ${
-          isDark ? 'bg-indigo-600' : 'bg-indigo-100'
+          colors.conditional('bg-indigo-100', 'bg-indigo-600')
         }`}>
-          <Download size={20} className={isDark ? 'text-white' : 'text-indigo-600'} />
+          <Download size={20} className={colors.conditional('text-indigo-600', 'text-white')} />
         </div>
         
         <div className="flex-1">
@@ -117,9 +121,7 @@ const PWAInstaller = () => {
             <button
               onClick={handleInstall}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                isDark 
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                colors.get('button.primary')
               }`}
             >
               Install
@@ -127,9 +129,7 @@ const PWAInstaller = () => {
             <button
               onClick={handleDismiss}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                isDark 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                colors.get('button.secondary')
               }`}
             >
               Maybe Later
@@ -140,9 +140,10 @@ const PWAInstaller = () => {
         <button
           onClick={handleDismiss}
           className={`p-1 rounded-md transition ${
-            isDark 
-              ? 'hover:bg-gray-700 text-gray-400' 
-              : 'hover:bg-gray-100 text-gray-500'
+            colors.conditional(
+              'hover:bg-gray-100 text-gray-500',
+              'hover:bg-gray-700 text-gray-400'
+            )
           }`}
         >
           <X size={16} />

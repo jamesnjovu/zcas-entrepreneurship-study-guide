@@ -21,7 +21,7 @@ const TopicCard = ({ topic, onSelect }) => {
               {topic.title}
             </h3>
           </div>
-          <ChevronRight className="text-indigo-400 flex-shrink-0" size={18} />
+          <ChevronRight className={`${colors.conditional('text-indigo-600', 'text-indigo-400')} flex-shrink-0`} size={18} />
         </div>
       </div>
     );

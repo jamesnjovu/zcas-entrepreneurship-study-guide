@@ -154,23 +154,8 @@ export const AppProvider = ({ children }) => {
     }, []),
 
     submitQuiz: useCallback((answers) => {
-      const result = dispatch(studyActions.submitQuiz(answers));
-      
-      // Also save to progress if we have a selected unit
-      if (state.study.selectedUnit && state.study.quizScore !== null) {
-        const quiz = state.study.selectedUnit.quiz;
-        if (quiz) {
-          dispatch(progressActions.saveQuizResult(
-            state.study.selectedUnit.id,
-            state.study.quizScore,
-            quiz.questions.length,
-            answers
-          ));
-        }
-      }
-      
-      return result;
-    }, [state.study.selectedUnit, state.study.quizScore]),
+      return dispatch(studyActions.submitQuiz(answers));
+    }, []),
 
     resetQuiz: useCallback(() => {
       dispatch(studyActions.resetQuiz());

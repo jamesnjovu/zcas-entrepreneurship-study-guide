@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { getThemeColor } from '../store';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -52,28 +53,24 @@ class ErrorBoundary extends Component {
       const isDark = this.isDarkMode();
       
       return (
-        <div className={`min-h-screen flex items-center justify-center transition-colors ${isDark ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
-          <div className={`rounded-lg shadow-lg p-8 max-w-md mx-4 transition-colors ${isDark ? 'bg-gray-800 text-white border border-gray-700' : 'bg-white text-gray-800'}`}>
+        <div className={`min-h-screen flex items-center justify-center transition-colors ${getThemeColor(isDark, 'gradient.appBackground')}`}>
+          <div className={`rounded-lg shadow-lg p-8 max-w-md mx-4 transition-colors ${getThemeColor(isDark, 'card.background')} ${isDark ? 'text-white border border-gray-700' : 'text-gray-800'}`}>
             <div className="text-center">
-              <div className={`text-6xl mb-4 ${isDark ? 'text-red-400' : 'text-red-500'}`}>⚠️</div>
-              <h2 className={`text-2xl font-bold mb-4 transition-colors ${isDark ? 'text-red-300' : 'text-red-600'}`}>
+              <div className={`text-6xl mb-4 ${getThemeColor(isDark, 'status.error.text')}`}>⚠️</div>
+              <h2 className={`text-2xl font-bold mb-4 transition-colors ${getThemeColor(isDark, 'status.error.text')}`}>
                 Oops! Something went wrong
               </h2>
-              <p className={`mb-6 leading-relaxed transition-colors ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className={`mb-6 leading-relaxed transition-colors ${getThemeColor(isDark, 'secondary')}`}>
                 We encountered an unexpected error. Don't worry - your progress has been saved. Please refresh the page to continue studying.
               </p>
               <div className="space-y-3">
                 <button
                   onClick={() => window.location.reload()}
-                  className={`w-full px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${
-                    isDark 
-                      ? 'bg-indigo-600 hover:bg-indigo-500 focus:ring-4 focus:ring-indigo-800' 
-                      : 'bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300'
-                  } text-white shadow-lg`}
+                  className={`w-full px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${getThemeColor(isDark, 'button.primary')} text-white shadow-lg`}
                 >
                   🔄 Refresh Page
                 </button>
-                <p className={`text-xs transition-colors ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className={`text-xs transition-colors ${getThemeColor(isDark, 'muted')}`}>
                   Your study progress is automatically saved
                 </p>
               </div>

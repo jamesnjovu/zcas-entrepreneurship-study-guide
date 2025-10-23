@@ -64,7 +64,7 @@ const QuizView = ({
           ← Back to Topics
         </button>
         <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-4 md:p-8`}>
-          <div className="text-center mb-6 md:mb-8 p-4 md:p-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white">
+          <div className={`text-center mb-6 md:mb-8 p-4 md:p-8 ${colors.get('gradient.header.quiz')} rounded-lg text-white`}>
             <Award size={48} className="mx-auto mb-3 md:mb-4 md:w-16 md:h-16" />
             <h3 className="text-2xl md:text-3xl font-bold mb-2">Quiz Complete!</h3>
             <p className="text-lg md:text-xl">
@@ -92,12 +92,12 @@ const QuizView = ({
                     onClick={() => setCurrentQuestionIndex(idx)}
                     className={`w-10 h-10 md:w-8 md:h-8 rounded-full text-sm font-bold text-white transition touch-manipulation ${
                       idx === currentQuestionIndex
-                        ? 'ring-2 ring-indigo-300 scale-110'
+                        ? `ring-2 ${colors.conditional('ring-indigo-300', 'ring-indigo-400')} scale-110`
                         : ''
                     } ${
                       isCorrect
-                        ? 'bg-green-500 hover:bg-green-600'
-                        : 'bg-red-500 hover:bg-red-600'
+                        ? colors.conditional('bg-green-500 hover:bg-green-600', 'bg-green-600 hover:bg-green-700')
+                        : colors.conditional('bg-red-500 hover:bg-red-600', 'bg-red-600 hover:bg-red-700')
                     }`}
                   >
                     {idx + 1}

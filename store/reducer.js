@@ -170,11 +170,33 @@ const studyReducer = (state, action) => {
         }
       });
       
+      // Save quiz result to progress (if we have a selected unit)
+      let updatedProgress = state.progress;
+      if (state.selectedUnit) {
+        const quizResult = {
+          unitId: state.selectedUnit.id,
+          unitTitle: state.selectedUnit.title,
+          score: score,
+          totalQuestions: quiz.length,
+          percentage: Math.round((score / quiz.length) * 100),
+          answers: answers,
+          dateTaken: new Date().toISOString(),
+          timeSpent: 0 // We could track this in the future
+        };
+        
+        // Add to quiz results array
+        updatedProgress = {
+          ...state.progress,
+          quizResults: [...(state.progress.quizResults || []), quizResult]
+        };
+      }
+      
       return {
         ...state,
         quizAnswers: answers,
         quizSubmitted: true,
         quizScore: score,
+        progress: updatedProgress,
       };
     }
     case STUDY_ACTIONS.RESET_QUIZ:

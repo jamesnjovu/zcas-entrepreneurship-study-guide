@@ -29,7 +29,7 @@ const UnitCard = ({ unit, onSelect }) => {
               {unit.topics.length} Topics • {unit.quiz.length} Quiz Questions
             </p>
           </div>
-          <ChevronRight className="text-indigo-400 flex-shrink-0" size={20} />
+          <ChevronRight className={`${colors.conditional('text-indigo-600', 'text-indigo-400')} flex-shrink-0`} size={20} />
         </div>
       </div>
     );
