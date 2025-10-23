@@ -105,14 +105,18 @@ const progressReducer = (state, action) => {
     }
     case PROGRESS_ACTIONS.TRACK_READING_TIME: {
       const { unitId, topicId, timeSpent } = action.payload;
-      if (!unitId || !topicId || timeSpent <= 0) return state;
+      
+      if (!unitId || !topicId || timeSpent <= 0 || !Number.isFinite(timeSpent)) return state;
       
       const topicKey = `${unitId}-${topicId}`;
+      const currentTime = state.readingTime[topicKey] || 0;
+      const newTime = currentTime + timeSpent;
+      
       return {
         ...state,
         readingTime: {
           ...state.readingTime,
-          [topicKey]: (state.readingTime[topicKey] || 0) + timeSpent,
+          [topicKey]: newTime,
         },
         lastActivity: new Date().toISOString(),
       };
@@ -170,33 +174,11 @@ const studyReducer = (state, action) => {
         }
       });
       
-      // Save quiz result to progress (if we have a selected unit)
-      let updatedProgress = state.progress;
-      if (state.selectedUnit) {
-        const quizResult = {
-          unitId: state.selectedUnit.id,
-          unitTitle: state.selectedUnit.title,
-          score: score,
-          totalQuestions: quiz.length,
-          percentage: Math.round((score / quiz.length) * 100),
-          answers: answers,
-          dateTaken: new Date().toISOString(),
-          timeSpent: 0 // We could track this in the future
-        };
-        
-        // Add to quiz results array
-        updatedProgress = {
-          ...state.progress,
-          quizResults: [...(state.progress.quizResults || []), quizResult]
-        };
-      }
-      
       return {
         ...state,
         quizAnswers: answers,
         quizSubmitted: true,
         quizScore: score,
-        progress: updatedProgress,
       };
     }
     case STUDY_ACTIONS.RESET_QUIZ:
@@ -306,7 +288,6 @@ export const appReducer = (state, action) => {
     case STUDY_ACTIONS.SELECT_UNIT:
     case STUDY_ACTIONS.SELECT_TOPIC:
     case STUDY_ACTIONS.SET_QUIZ_ANSWER:
-    case STUDY_ACTIONS.SUBMIT_QUIZ:
     case STUDY_ACTIONS.RESET_QUIZ:
     case STUDY_ACTIONS.NAVIGATE_TOPIC:
     case STUDY_ACTIONS.NAVIGATE_TO_NEXT_UNIT:
@@ -314,6 +295,40 @@ export const appReducer = (state, action) => {
         ...state,
         study: studyReducer(state.study, action),
       };
+    
+    // Special handling for SUBMIT_QUIZ to update both study and progress
+    case STUDY_ACTIONS.SUBMIT_QUIZ: {
+      const updatedStudyState = studyReducer(state.study, action);
+      
+      // If we have a selected unit and quiz was scored, save to progress
+      let updatedProgress = state.progress;
+      if (state.study.selectedUnit && updatedStudyState.quizScore !== null) {
+        const quizResult = {
+          id: Date.now(),
+          unitId: state.study.selectedUnit.id,
+          unitTitle: state.study.selectedUnit.title,
+          score: updatedStudyState.quizScore,
+          totalQuestions: state.study.selectedUnit.quiz?.length || 0,
+          percentage: Math.round((updatedStudyState.quizScore / (state.study.selectedUnit.quiz?.length || 1)) * 100),
+          answers: updatedStudyState.quizAnswers,
+          dateTaken: new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+          timeSpent: 0
+        };
+        
+        updatedProgress = {
+          ...(state.progress || {}),
+          quizResults: [...((state.progress?.quizResults) || []), quizResult],
+          lastActivity: new Date().toISOString()
+        };
+      }
+      
+      return {
+        ...state,
+        study: updatedStudyState,
+        progress: updatedProgress,
+      };
+    }
     // Offline actions
     case OFFLINE_ACTIONS.SET_ONLINE_STATUS:
     case OFFLINE_ACTIONS.SET_HAS_BEEN_OFFLINE:

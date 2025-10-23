@@ -68,7 +68,7 @@ const ContentView = ({
     if (trackReadingTimeRef.current && readingStartTime.current && topic) {
       const timeSpent = (Date.now() - readingStartTime.current) / 1000;
       // Only track if meaningful time was spent
-      if (timeSpent >= 2) {
+      if (timeSpent >= 2 && Number.isFinite(timeSpent)) {
         trackReadingTimeRef.current(topic.unitId, topic.id, timeSpent);
         // Reset to prevent duplicate tracking
         readingStartTime.current = Date.now();
@@ -145,7 +145,7 @@ const ContentView = ({
       if (trackReadingTimeRef.current && readingStartTime.current && topic) {
         const timeSpent = (Date.now() - readingStartTime.current) / 1000;
         // Only track if meaningful time was spent (more than 2 seconds)
-        if (timeSpent >= 2) {
+        if (timeSpent >= 2 && Number.isFinite(timeSpent)) {
           trackReadingTimeRef.current(topic.unitId, topic.id, timeSpent);
         }
       }

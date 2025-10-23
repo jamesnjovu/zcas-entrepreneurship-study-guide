@@ -203,15 +203,20 @@ export const AppProvider = ({ children }) => {
   const computed = {
     // Progress computed values
     getProgressStats: useCallback(() => {
-      const progress = state.progress;
-      const totalReadingTime = Object.values(progress.readingTime).reduce((sum, time) => sum + time, 0);
-      const averageQuizScore = progress.quizResults.length > 0
-        ? progress.quizResults.reduce((sum, result) => sum + result.percentage, 0) / progress.quizResults.length
+      const progress = state.progress || {};
+      const readingTime = progress.readingTime || {};
+      const quizResults = progress.quizResults || [];
+      const completedTopics = progress.completedTopics || [];
+      
+      const totalReadingTime = Object.values(readingTime).reduce((sum, time) => sum + (typeof time === 'number' ? time : 0), 0);
+      
+      const averageQuizScore = quizResults.length > 0
+        ? quizResults.reduce((sum, result) => sum + (result.percentage || 0), 0) / quizResults.length
         : 0;
       
       return {
-        completedTopicsCount: progress.completedTopics.length,
-        totalQuizzesTaken: progress.quizResults.length,
+        completedTopicsCount: completedTopics.length,
+        totalQuizzesTaken: quizResults.length,
         averageQuizScore: Math.round(averageQuizScore),
         totalReadingTime: Math.round(totalReadingTime / 60), // Convert to minutes
         lastActivity: progress.lastActivity,

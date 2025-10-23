@@ -102,7 +102,7 @@ const StudyGuideContent = () => {
             hasNextUnit={hasNextUnit()}
             nextUnit={getNextUnit()}
             markTopicCompleted={() => markTopicCompleted(selectedUnit?.id, selectedTopic?.id)}
-            trackReadingTime={(timeSpent: number) => trackReadingTime(selectedUnit?.id, selectedTopic?.id, timeSpent)}
+            trackReadingTime={(unitId: number, topicId: number, timeSpent: number) => trackReadingTime(unitId, topicId, timeSpent)}
           />
         )}
         
