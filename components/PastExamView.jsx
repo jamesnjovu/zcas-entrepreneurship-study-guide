@@ -44,7 +44,6 @@ const PastExamView = ({
     setPitch,
     setAutoAdvance,
     setShowProgressBar,
-    setAutoStart,
     speak,
     pause,
     resume,
@@ -494,9 +493,49 @@ const PastExamView = ({
                 {/* Speech Controls */}
                 <button
                   onClick={() => {
-                    const textToSpeak = currentPage.content.context 
-                      ? `Context: ${currentPage.content.context}. Question: ${currentPage.content.question || 'This question has multiple parts'}`
-                      : currentPage.content.question || 'This question has multiple parts';
+                    let textToSpeak = '';
+                    
+                    // Add context if available
+                    if (currentPage.content.context) {
+                      textToSpeak += `Context: ${currentPage.content.context}. `;
+                    }
+                    
+                    // Add main question
+                    if (currentPage.content.question) {
+                      textToSpeak += `Question: ${currentPage.content.question}. `;
+                    } else if (currentPage.content.totalMarks) {
+                      textToSpeak += `This question has multiple parts. `;
+                    }
+                    
+                    // Add model answer for single question only if answers are visible
+                    if (!currentPage.content.parts && currentPage.content.modelAnswer && showModelAnswers) {
+                      textToSpeak += `Model Answer: `;
+                      if (Array.isArray(currentPage.content.modelAnswer)) {
+                        textToSpeak += currentPage.content.modelAnswer.join('. ') + '. ';
+                      } else {
+                        const cleanAnswer = currentPage.content.modelAnswer.replace(/\n/g, '. ');
+                        textToSpeak += cleanAnswer + '. ';
+                      }
+                    }
+                    
+                    // Add parts with model answers only if answers are visible
+                    if (currentPage.content.parts) {
+                      currentPage.content.parts.forEach((part, idx) => {
+                        const partLabel = String.fromCharCode(97 + idx); // a, b, c, etc.
+                        textToSpeak += `Part ${partLabel}: ${part.question}. `;
+                        
+                        if (part.modelAnswer && showModelAnswers) {
+                          textToSpeak += `Model Answer: `;
+                          if (Array.isArray(part.modelAnswer)) {
+                            textToSpeak += part.modelAnswer.join('. ') + '. ';
+                          } else {
+                            const cleanAnswer = part.modelAnswer.replace(/\n/g, '. ');
+                            textToSpeak += cleanAnswer + '. ';
+                          }
+                        }
+                      });
+                    }
+                    
                     speak(textToSpeak); // No auto-advance for individual button
                   }}
                   className={`p-2 rounded transition ${
@@ -504,7 +543,7 @@ const PastExamView = ({
                       ? 'text-blue-400 hover:bg-gray-700' 
                       : 'text-blue-600 hover:bg-blue-100'
                   }`}
-                  title="Read question aloud"
+                  title={showModelAnswers ? "Read question and answer aloud" : "Read question aloud"}
                 >
                   <Volume2 size={20} />
                 </button>
@@ -615,13 +654,28 @@ const PastExamView = ({
                             Part {part.part || idx + 1}
                           </h4>
                           <button
-                            onClick={() => speak(`Part ${part.part || idx + 1}. ${part.question}`)} // No auto-advance for individual parts
+                            onClick={() => {
+                              let partText = `Part ${part.part || idx + 1}. ${part.question}. `;
+                              
+                              // Add model answer only if answers are visible
+                              if (part.modelAnswer && showModelAnswers) {
+                                partText += `Model Answer: `;
+                                if (Array.isArray(part.modelAnswer)) {
+                                  partText += part.modelAnswer.join('. ') + '. ';
+                                } else {
+                                  const cleanAnswer = part.modelAnswer.replace(/\n/g, '. ');
+                                  partText += cleanAnswer + '. ';
+                                }
+                              }
+                              
+                              speak(partText); // No auto-advance for individual parts
+                            }}
                             className={`p-1 rounded transition ${
                               isDark 
                                 ? 'text-blue-400 hover:bg-gray-600' 
                                 : 'text-blue-600 hover:bg-blue-100'
                             }`}
-                            title="Read part aloud"
+                            title={showModelAnswers ? "Read part and answer aloud" : "Read part aloud"}
                           >
                             <Volume2 size={16} />
                           </button>
