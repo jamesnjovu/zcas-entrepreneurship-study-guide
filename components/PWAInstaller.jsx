@@ -12,11 +12,18 @@ const PWAInstaller = () => {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator && typeof window !== 'undefined') {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
+    let timeoutId;
+    
+    // Register service worker with retry logic
+    if ('serviceWorker' in navigator) {
       const registerSW = async () => {
         try {
-          const registration = await navigator.serviceWorker.register('/sw.js');
+          const registration = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/'
+          });
           
           // Handle service worker updates
           registration.addEventListener('updatefound', () => {
@@ -33,7 +40,7 @@ const PWAInstaller = () => {
             }
           });
         } catch (error) {
-          // Silently handle service worker registration errors
+          console.log('Service Worker registration failed:', error);
         }
       };
       
@@ -42,58 +49,132 @@ const PWAInstaller = () => {
 
     // Handle PWA install prompt
     const handleBeforeInstallPrompt = (e) => {
+      console.log('beforeinstallprompt fired');
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallPrompt(true);
+      
+      // Don't show immediately, wait a bit for better UX
+      timeoutId = setTimeout(() => {
+        if (!localStorage.getItem('pwa-install-dismissed')) {
+          setShowInstallPrompt(true);
+        }
+      }, 2000);
     };
 
     // Check if app is already installed
     const handleAppInstalled = () => {
+      console.log('App installed successfully');
       setIsInstalled(true);
       setShowInstallPrompt(false);
       setDeferredPrompt(null);
+      localStorage.removeItem('pwa-install-dismissed');
     };
 
+    // Check various ways the app might be installed
+    const checkIfInstalled = () => {
+      // Check if running in standalone mode
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      // Check iOS Safari standalone
+      const isIOSStandalone = (window.navigator as any).standalone === true;
+      // Check if launched from home screen (Android)
+      const isHomeScreen = window.location.search.includes('source=pwa');
+      
+      if (isStandalone || isIOSStandalone || isHomeScreen) {
+        setIsInstalled(true);
+      }
+    };
+    
     // Listen for install events
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
-
-    // Check if running in standalone mode (already installed)
-    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-    }
+    
+    // Initial check
+    checkIfInstalled();
+    
+    // For browsers that don't support beforeinstallprompt but support PWAs
+    // Show manual install instructions after a delay if criteria are met
+    const fallbackTimer = setTimeout(() => {
+      if (!deferredPrompt && !isInstalled && !localStorage.getItem('pwa-install-dismissed')) {
+        // Check if we have a valid manifest and service worker
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+          setShowInstallPrompt(true);
+        }
+      }
+    }, 5000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (fallbackTimer) clearTimeout(fallbackTimer);
     };
-  }, []);
+  }, [deferredPrompt, isInstalled]);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-
-    try {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        setShowInstallPrompt(false);
+    if (deferredPrompt) {
+      try {
+        // Use the deferred prompt
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        console.log('User response to install prompt:', outcome);
+        
+        if (outcome === 'accepted') {
+          setShowInstallPrompt(false);
+        } else {
+          // User dismissed, remember for this session
+          handleDismiss();
+        }
+        
+        setDeferredPrompt(null);
+      } catch (error) {
+        console.log('Install prompt error:', error);
+        // Fallback to manual instructions
+        showManualInstallInstructions();
       }
-      
-      setDeferredPrompt(null);
-    } catch (error) {
-      // Handle install error silently
+    } else {
+      // No deferred prompt available, show manual instructions
+      showManualInstallInstructions();
     }
+  };
+  
+  const showManualInstallInstructions = () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    let instructions = 'To install this app:\n\n';
+    
+    if (isIOS) {
+      instructions += '1. Tap the Share button (square with arrow)\n';
+      instructions += '2. Select "Add to Home Screen"\n';
+      instructions += '3. Tap "Add" to install';
+    } else if (isAndroid) {
+      instructions += '1. Tap the menu (⋮) in your browser\n';
+      instructions += '2. Select "Add to Home screen" or "Install app"\n';
+      instructions += '3. Follow the prompts to install';
+    } else {
+      instructions += '1. Look for an install button in your browser\'s address bar\n';
+      instructions += '2. Or check your browser\'s menu for "Install" option\n';
+      instructions += '3. Follow the prompts to install';
+    }
+    
+    alert(instructions);
+    handleDismiss();
   };
 
   const handleDismiss = () => {
     setShowInstallPrompt(false);
-    // Remember user dismissed the prompt
-    localStorage.setItem('pwa-install-dismissed', 'true');
+    // Remember user dismissed the prompt for 7 days
+    const dismissedUntil = Date.now() + (7 * 24 * 60 * 60 * 1000);
+    localStorage.setItem('pwa-install-dismissed', dismissedUntil.toString());
   };
 
-  // Don't show if already installed or user previously dismissed
-  if (isInstalled || !showInstallPrompt || localStorage.getItem('pwa-install-dismissed')) {
+  // Check if user dismissed recently
+  const dismissedUntil = localStorage.getItem('pwa-install-dismissed');
+  const isDismissed = dismissedUntil && Date.now() < parseInt(dismissedUntil);
+  
+  // Don't show if already installed, not prompted, or recently dismissed
+  if (isInstalled || !showInstallPrompt || isDismissed) {
     return null;
   }
 

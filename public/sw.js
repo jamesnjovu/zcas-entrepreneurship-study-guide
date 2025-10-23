@@ -1,21 +1,30 @@
-const CACHE_NAME = 'zcas-study-guide-v1';
+const CACHE_NAME = 'zcas-study-guide-v1.1';
 const STATIC_CACHE_URLS = [
   '/',
   '/manifest.json',
-  '/favicon.ico',
-  // Static assets will be added dynamically
+  '/icon.svg',
+  '/favicon.ico'
 ];
+
+// Runtime cache for dynamic content
+const RUNTIME_CACHE = 'zcas-runtime-v1.1';
 
 // Install Service Worker
 self.addEventListener('install', (event) => {
+  console.log('Service Worker: Installing');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(STATIC_CACHE_URLS);
+        console.log('Service Worker: Caching static files');
+        return cache.addAll(STATIC_CACHE_URLS.map(url => new Request(url, { cache: 'reload' })));
       })
       .then(() => {
+        console.log('Service Worker: Static files cached');
         // Force the waiting service worker to become the active service worker
         return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('Service Worker: Failed to cache static files', error);
       })
   );
 });
@@ -68,13 +77,16 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activating');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then((cacheNames) => {
+        console.log('Service Worker: Cleaning up old caches');
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
+            if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+              console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -84,6 +96,7 @@ self.addEventListener('activate', (event) => {
       self.clients.claim()
     ])
   );
+  console.log('Service Worker: Activated');
 });
 
 // Background sync for when connectivity is restored
