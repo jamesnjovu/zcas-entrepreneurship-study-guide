@@ -7,7 +7,7 @@ const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect, onP
   const colors = useThemeColors(isDark);
   
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
       {units.map((unit) => (
         <UnitCard key={unit.id} unit={unit} onSelect={onUnitSelect} />
       ))}
@@ -15,43 +15,43 @@ const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect, onP
       {/* Past Exam Questions Card */}
       <div
         onClick={onPastExamSelect}
-        className={`p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white ${
+        className={`p-4 md:p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white min-h-[160px] md:min-h-[180px] flex flex-col justify-between ${
           colors.conditional(
             'bg-gradient-to-br from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700',
             'bg-gradient-to-br from-purple-600 to-pink-700 hover:from-purple-700 hover:to-pink-800'
           )
         }`}
       >
-        <div className="flex items-center mb-4">
-          <BookOpen className="mr-3 group-hover:scale-110 transition" size={28} />
-          <Calendar className="group-hover:scale-110 transition" size={24} />
+        <div className="flex items-center mb-3 md:mb-4">
+          <BookOpen className="mr-2 md:mr-3 group-hover:scale-110 transition" size={24} />
+          <Calendar className="group-hover:scale-110 transition" size={20} />
         </div>
         
-        <h3 className={`text-2xl font-bold mb-2 transition ${
+        <h3 className={`text-lg md:text-2xl font-bold mb-2 transition ${
           colors.conditional('group-hover:text-purple-100', 'group-hover:text-purple-200')
         }`}>
           Past Exam Questions
         </h3>
         
-        <p className={`mb-4 ${
+        <p className={`text-sm md:text-base mb-3 md:mb-4 line-clamp-2 md:line-clamp-none ${
           colors.conditional('text-purple-100', 'text-purple-200')
         }`}>
           Practice with previous years' exam questions to test your knowledge and prepare for assessments.
         </p>
         
-        <div className="flex items-center justify-between">
-          <span className={`text-sm ${
+        <div className="flex items-center justify-between mt-auto">
+          <span className={`text-xs md:text-sm ${
             colors.conditional('text-purple-200', 'text-purple-300')
           }`}>
             Multiple years available
           </span>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition ${
+          <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition ${
             colors.conditional(
               'bg-purple-400 group-hover:bg-purple-300',
               'bg-purple-500 group-hover:bg-purple-400'
             )
           }`}>
-            <span className="text-sm font-bold">📚</span>
+            <span className="text-xs md:text-sm font-bold">📚</span>
           </div>
         </div>
       </div>
@@ -59,42 +59,42 @@ const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect, onP
       {/* Settings Card */}
       <div
         onClick={onSettingsSelect}
-        className={`p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white ${
+        className={`p-4 md:p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white min-h-[160px] md:min-h-[180px] flex flex-col justify-between ${
           colors.conditional(
             'bg-gradient-to-br from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900',
             'bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950'
           )
         }`}
       >
-        <div className="flex items-center mb-4">
-          <Settings className="mr-3 group-hover:scale-110 transition group-hover:rotate-45" size={28} />
+        <div className="flex items-center mb-3 md:mb-4">
+          <Settings className="mr-2 md:mr-3 group-hover:scale-110 transition group-hover:rotate-45" size={24} />
         </div>
         
-        <h3 className={`text-2xl font-bold mb-2 transition ${
+        <h3 className={`text-lg md:text-2xl font-bold mb-2 transition ${
           colors.conditional('group-hover:text-gray-100', 'group-hover:text-gray-50')
         }`}>
           Settings
         </h3>
         
-        <p className={`mb-4 ${
+        <p className={`text-sm md:text-base mb-3 md:mb-4 line-clamp-2 md:line-clamp-none ${
           colors.conditional('text-gray-200', 'text-gray-100')
         }`}>
           Customize your study experience with text-to-speech settings, auto-advance options, and more.
         </p>
         
-        <div className="flex items-center justify-between">
-          <span className={`text-sm ${
+        <div className="flex items-center justify-between mt-auto">
+          <span className={`text-xs md:text-sm ${
             colors.conditional('text-gray-300', 'text-gray-200')
           }`}>
             Voice & behavior settings
           </span>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition ${
+          <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition ${
             colors.conditional(
               'bg-gray-500 group-hover:bg-gray-400',
               'bg-gray-400 group-hover:bg-gray-300'
             )
           }`}>
-            <span className="text-sm font-bold">⚙️</span>
+            <span className="text-xs md:text-sm font-bold">⚙️</span>
           </div>
         </div>
       </div>
@@ -102,42 +102,42 @@ const HomeView = ({ units, onUnitSelect, onPastExamSelect, onSettingsSelect, onP
       {/* Progress Card */}
       <div
         onClick={onProgressSelect}
-        className={`p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white ${
+        className={`p-4 md:p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer group text-white min-h-[160px] md:min-h-[180px] flex flex-col justify-between ${
           colors.conditional(
             'bg-gradient-to-br from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700',
             'bg-gradient-to-br from-green-600 to-teal-700 hover:from-green-700 hover:to-teal-800'
           )
         }`}
       >
-        <div className="flex items-center mb-4">
-          <TrendingUp className="mr-3 group-hover:scale-110 transition" size={28} />
+        <div className="flex items-center mb-3 md:mb-4">
+          <TrendingUp className="mr-2 md:mr-3 group-hover:scale-110 transition" size={24} />
         </div>
         
-        <h3 className={`text-2xl font-bold mb-2 transition ${
+        <h3 className={`text-lg md:text-2xl font-bold mb-2 transition ${
           colors.conditional('group-hover:text-green-100', 'group-hover:text-green-200')
         }`}>
           Study Progress
         </h3>
         
-        <p className={`mb-4 ${
+        <p className={`text-sm md:text-base mb-3 md:mb-4 line-clamp-2 md:line-clamp-none ${
           colors.conditional('text-green-100', 'text-green-200')
         }`}>
           Track your learning journey, view completed topics, quiz results, and study statistics.
         </p>
         
-        <div className="flex items-center justify-between">
-          <span className={`text-sm ${
+        <div className="flex items-center justify-between mt-auto">
+          <span className={`text-xs md:text-sm ${
             colors.conditional('text-green-200', 'text-green-300')
           }`}>
             Topics & quiz tracking
           </span>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition ${
+          <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition ${
             colors.conditional(
               'bg-green-400 group-hover:bg-green-300',
               'bg-green-500 group-hover:bg-green-400'
             )
           }`}>
-            <span className="text-sm font-bold">📊</span>
+            <span className="text-xs md:text-sm font-bold">📊</span>
           </div>
         </div>
       </div>

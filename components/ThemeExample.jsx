@@ -45,7 +45,7 @@ const ThemeExample = () => {
       </div>
 
       {/* Method 4: Status colors */}
-      <div className=\"space-y-4\">
+      <div className="space-y-4">
         <div className={`p-4 rounded border-l-4 ${colors.get('status.info.background')} ${colors.get('status.info.border')}`}>
           <h3 className={colors.get('status.info.text')}>Info Status</h3>
           <p className={colors.get('status.info.text')}>This is an info message</p>
@@ -69,18 +69,18 @@ const ThemeExample = () => {
       </div>
 
       {/* Method 6: Interactive elements */}
-      <div className=\"mt-4 space-x-2\">
+      <div className="mt-4 space-x-2">
         <button className={`p-2 rounded transition ${colors.get('interactive.hover')}`}>
           Hover Button
         </button>
         <input 
           className={`p-2 border rounded ${colors.get('border.primary')} ${colors.get('interactive.focus')}`}
-          placeholder=\"Focus me for ring effect\"
+          placeholder="Focus me for ring effect"
         />
       </div>
 
       {/* Progress bar example */}
-      <div className=\"mt-4\">
+      <div className="mt-4">
         <div className={`w-full h-2 rounded ${colors.get('progress.background')}`}>
           <div className={`w-1/2 h-2 rounded ${colors.get('progress.bar')}`}></div>
         </div>

@@ -56,80 +56,79 @@ const ProgressView = ({ onBack }) => {
     <div>
       <button
         onClick={onBack}
-        className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold`}
+        className={`mb-4 px-4 py-3 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold min-h-[44px] touch-manipulation`}
       >
         <ChevronLeft className="inline mr-2" size={16} />
         Back
       </button>
       
-      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
-        <div className="text-center mb-8">
-          <TrendingUp size={64} className={`mx-auto mb-4 ${colors.conditional('text-indigo-600', 'text-indigo-400')}`} />
-          <h2 className={`text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')} mb-2`}>Study Progress</h2>
-          <p className={colors.secondary}>Track your learning journey and achievements</p>
-          
+      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-4 md:p-8`}>
+        <div className="text-center mb-6 md:mb-8">
+          <TrendingUp size={48} className={`mx-auto mb-3 md:mb-4 md:w-16 md:h-16 ${colors.conditional('text-indigo-600', 'text-indigo-400')}`} />
+          <h2 className={`text-2xl md:text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')} mb-2`}>Study Progress</h2>
+          <p className={`text-sm md:text-base ${colors.secondary}`}>Track your learning journey and achievements</p>
         </div>
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className={`p-6 ${colors.get('status.info.background')} ${colors.get('status.info.border')} rounded-lg border`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+          <div className={`p-4 md:p-6 ${colors.get('status.info.background')} ${colors.get('status.info.border')} rounded-lg border`}>
             <div className="flex items-center gap-3">
-              <div className={`p-3 ${colors.conditional('bg-blue-100', 'bg-blue-800')} rounded-lg`}>
-                <CheckCircle size={24} className={colors.conditional('text-blue-600', 'text-blue-400')} />
+              <div className={`p-2 md:p-3 ${colors.conditional('bg-blue-100', 'bg-blue-800')} rounded-lg`}>
+                <CheckCircle size={20} className={colors.conditional('text-blue-600', 'text-blue-400')} />
               </div>
               <div>
-                <p className={`text-2xl font-bold ${colors.conditional('text-blue-600', 'text-blue-400')}`}>
+                <p className={`text-xl md:text-2xl font-bold ${colors.conditional('text-blue-600', 'text-blue-400')}`}>
                   {completionPercentage}%
                 </p>
-                <p className={`text-sm ${colors.secondary}`}>
+                <p className={`text-xs md:text-sm ${colors.secondary}`}>
                   Topics Completed
                 </p>
               </div>
             </div>
           </div>
 
-          <div className={`p-6 ${colors.get('status.success.background')} ${colors.get('status.success.border')} rounded-lg border`}>
+          <div className={`p-4 md:p-6 ${colors.get('status.success.background')} ${colors.get('status.success.border')} rounded-lg border`}>
             <div className="flex items-center gap-3">
-              <div className={`p-3 ${colors.conditional('bg-green-100', 'bg-green-800')} rounded-lg`}>
-                <Award size={24} className={colors.conditional('text-green-600', 'text-green-400')} />
+              <div className={`p-2 md:p-3 ${colors.conditional('bg-green-100', 'bg-green-800')} rounded-lg`}>
+                <Award size={20} className={colors.conditional('text-green-600', 'text-green-400')} />
               </div>
               <div>
-                <p className={`text-2xl font-bold ${colors.conditional('text-green-600', 'text-green-400')}`}>
+                <p className={`text-xl md:text-2xl font-bold ${colors.conditional('text-green-600', 'text-green-400')}`}>
                   {stats.totalQuizzesTaken}
                 </p>
-                <p className={`text-sm ${colors.secondary}`}>
+                <p className={`text-xs md:text-sm ${colors.secondary}`}>
                   Quizzes Taken
                 </p>
               </div>
             </div>
           </div>
 
-          <div className={`p-6 ${colors.get('status.purple.background')} ${colors.get('status.purple.border')} rounded-lg border`}>
+          <div className={`p-4 md:p-6 ${colors.get('status.purple.background')} ${colors.get('status.purple.border')} rounded-lg border`}>
             <div className="flex items-center gap-3">
-              <div className={`p-3 ${colors.conditional('bg-purple-100', 'bg-purple-800')} rounded-lg`}>
-                <BarChart3 size={24} className={colors.conditional('text-purple-600', 'text-purple-400')} />
+              <div className={`p-2 md:p-3 ${colors.conditional('bg-purple-100', 'bg-purple-800')} rounded-lg`}>
+                <BarChart3 size={20} className={colors.conditional('text-purple-600', 'text-purple-400')} />
               </div>
               <div>
-                <p className={`text-2xl font-bold ${colors.conditional('text-purple-600', 'text-purple-400')}`}>
+                <p className={`text-xl md:text-2xl font-bold ${colors.conditional('text-purple-600', 'text-purple-400')}`}>
                   {stats.averageQuizScore}%
                 </p>
-                <p className={`text-sm ${colors.secondary}`}>
+                <p className={`text-xs md:text-sm ${colors.secondary}`}>
                   Average Score
                 </p>
               </div>
             </div>
           </div>
 
-          <div className={`p-6 ${colors.get('status.warning.background')} ${colors.get('status.warning.border')} rounded-lg border`}>
+          <div className={`p-4 md:p-6 ${colors.get('status.warning.background')} ${colors.get('status.warning.border')} rounded-lg border`}>
             <div className="flex items-center gap-3">
-              <div className={`p-3 ${colors.conditional('bg-orange-100', 'bg-orange-800')} rounded-lg`}>
-                <Clock size={24} className={colors.conditional('text-orange-600', 'text-orange-400')} />
+              <div className={`p-2 md:p-3 ${colors.conditional('bg-orange-100', 'bg-orange-800')} rounded-lg`}>
+                <Clock size={20} className={colors.conditional('text-orange-600', 'text-orange-400')} />
               </div>
               <div>
-                <p className={`text-2xl font-bold ${colors.conditional('text-orange-600', 'text-orange-400')}`}>
+                <p className={`text-xl md:text-2xl font-bold ${colors.conditional('text-orange-600', 'text-orange-400')}`}>
                   {stats.totalReadingTime}m
                 </p>
-                <p className={`text-sm ${colors.secondary}`}>
+                <p className={`text-xs md:text-sm ${colors.secondary}`}>
                   Study Time
                 </p>
               </div>
@@ -137,11 +136,11 @@ const ProgressView = ({ onBack }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           {/* Topic Progress */}
           <div>
-            <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-4 flex items-center`}>
-              <CheckCircle className="mr-2" size={24} />
+            <h3 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-3 md:mb-4 flex items-center`}>
+              <CheckCircle className="mr-2" size={20} />
               Topic Completion
             </h3>
             <div className="space-y-4">
@@ -176,8 +175,8 @@ const ProgressView = ({ onBack }) => {
 
           {/* Quiz Results */}
           <div>
-            <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-4 flex items-center`}>
-              <Award className="mr-2" size={24} />
+            <h3 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-3 md:mb-4 flex items-center`}>
+              <Award className="mr-2" size={20} />
               Recent Quiz Results
             </h3>
             {recentQuizResults.length > 0 ? (
@@ -230,7 +229,7 @@ const ProgressView = ({ onBack }) => {
               </div>
               <button
                 onClick={clearProgress}
-                className={`px-4 py-2 ${colors.conditional('bg-red-600 hover:bg-red-700', 'bg-red-700 hover:bg-red-600')} text-white rounded-lg transition font-medium`}
+                className={`px-4 py-3 ${colors.conditional('bg-red-600 hover:bg-red-700', 'bg-red-700 hover:bg-red-600')} text-white rounded-lg transition font-medium min-h-[44px] touch-manipulation text-sm md:text-base w-full sm:w-auto`}
               >
                 Clear All Progress
               </button>

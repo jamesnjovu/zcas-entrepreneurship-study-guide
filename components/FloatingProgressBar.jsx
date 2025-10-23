@@ -31,35 +31,65 @@ const FloatingProgressBar = ({
   }, [onSeek]);
 
   const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
     setIsDragging(true);
     handleProgressClick(e);
   }, [handleProgressClick]);
 
+  const handleTouchStart = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const touch = e.touches[0];
+    handleProgressClick({
+      clientX: touch.clientX,
+      preventDefault: () => {}
+    });
+  }, [handleProgressClick]);
+
   const handleMouseMove = useCallback((e) => {
     if (!isDragging) return;
+    e.preventDefault();
     handleProgressClick(e);
+  }, [isDragging, handleProgressClick]);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    handleProgressClick({
+      clientX: touch.clientX,
+      preventDefault: () => {}
+    });
   }, [isDragging, handleProgressClick]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
-  // Add global mouse event listeners when dragging
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Add global mouse and touch event listeners when dragging
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mousemove', handleMouseMove, { passive: false });
       document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   if (!isVisible || !isSupported) return null;
 
   return (
-    <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
+    <div className={`fixed bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 max-w-[90vw] md:max-w-none ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
     }`}>
       <div className={`rounded-xl shadow-2xl backdrop-blur-md border transition-colors ${
@@ -68,13 +98,13 @@ const FloatingProgressBar = ({
           : 'bg-white/90 border-gray-200 text-gray-800'
       }`}>
         {/* Main Controls */}
-        <div className="flex items-center gap-4 p-4">
+        <div className="flex items-center gap-2 md:gap-4 p-3 md:p-4">
           {/* Play/Pause/Stop Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             {isSpeaking && !isPaused ? (
               <button
                 onClick={onPause}
-                className={`p-2 rounded-full transition-colors ${
+                className={`p-2 md:p-2 rounded-full transition-colors min-h-[40px] min-w-[40px] md:min-h-[36px] md:min-w-[36px] touch-manipulation ${
                   isDark 
                     ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
@@ -86,7 +116,7 @@ const FloatingProgressBar = ({
             ) : (
               <button
                 onClick={onPlay}
-                className={`p-2 rounded-full transition-colors ${
+                className={`p-2 md:p-2 rounded-full transition-colors min-h-[40px] min-w-[40px] md:min-h-[36px] md:min-w-[36px] touch-manipulation ${
                   isDark 
                     ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
@@ -99,7 +129,7 @@ const FloatingProgressBar = ({
             
             <button
               onClick={onStop}
-              className={`p-2 rounded-full transition-colors ${
+              className={`p-2 md:p-2 rounded-full transition-colors min-h-[40px] min-w-[40px] md:min-h-[36px] md:min-w-[36px] touch-manipulation ${
                 isDark 
                   ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-600'
@@ -115,10 +145,11 @@ const FloatingProgressBar = ({
             {/* Progress Bar */}
             <div
               ref={progressBarRef}
-              className={`relative h-2 rounded-full cursor-pointer transition-colors ${
+              className={`relative h-3 md:h-2 rounded-full cursor-pointer transition-colors touch-manipulation ${
                 isDark ? 'bg-gray-700' : 'bg-gray-300'
               }`}
               onMouseDown={handleMouseDown}
+              onTouchStart={handleTouchStart}
               title="Click or drag to seek"
             >
               {/* Progress Fill */}
@@ -131,15 +162,15 @@ const FloatingProgressBar = ({
               
               {/* Drag Handle */}
               <div
-                className={`absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full transition-all duration-150 shadow-lg ${
+                className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 md:w-4 md:h-4 rounded-full transition-all duration-150 shadow-lg touch-manipulation ${
                   isDark ? 'bg-indigo-400 border-2 border-gray-900' : 'bg-indigo-600 border-2 border-white'
                 } ${isDragging ? 'scale-125' : 'scale-100'}`}
-                style={{ left: `calc(${Math.max(0, Math.min(100, progress))}% - 8px)` }}
+                style={{ left: `calc(${Math.max(0, Math.min(100, progress))}% - ${isDragging ? '10px' : '8px'})` }}
               />
             </div>
 
             {/* Progress Info */}
-            <div className="flex items-center justify-between mt-2 text-xs">
+            <div className="flex items-center justify-between mt-2 text-xs md:text-xs">
               <div className="flex items-center gap-2">
                 <Volume2 size={12} className={isDark ? 'text-gray-400' : 'text-gray-500'} />
                 <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>
@@ -154,7 +185,7 @@ const FloatingProgressBar = ({
             {/* Current Text Preview */}
             {currentText && (
               <div className={`mt-2 text-xs truncate ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                {currentText.length > 80 ? `${currentText.substring(0, 80)}...` : currentText}
+                {currentText.length > 60 ? `${currentText.substring(0, 60)}...` : currentText}
               </div>
             )}
           </div>
@@ -162,7 +193,7 @@ const FloatingProgressBar = ({
           {/* Close Button */}
           <button
             onClick={onClose}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors min-h-[40px] min-w-[40px] md:min-h-[36px] md:min-w-[36px] touch-manipulation ${
               isDark 
                 ? 'hover:bg-gray-700 text-gray-400 hover:text-gray-300' 
                 : 'hover:bg-gray-200 text-gray-500 hover:text-gray-600'

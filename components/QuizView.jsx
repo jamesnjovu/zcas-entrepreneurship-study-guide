@@ -35,7 +35,7 @@ const QuizView = ({
     speakQuestion,
   } = useTextToSpeech();
   const handleSubmit = () => {
-    onSubmitQuiz(unit.quiz);
+    onSubmitQuiz(quizAnswers);
   };
 
   const handleNextQuestion = () => {
@@ -59,40 +59,40 @@ const QuizView = ({
       <div>
         <button
           onClick={onBackToTopics}
-          className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold`}
+          className={`mb-4 px-4 py-3 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold min-h-[44px] min-w-[44px] touch-manipulation`}
         >
           ← Back to Topics
         </button>
-        <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
-          <div className="text-center mb-8 p-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white">
-            <Award size={64} className="mx-auto mb-4" />
-            <h3 className="text-3xl font-bold mb-2">Quiz Complete!</h3>
-            <p className="text-xl">
+        <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-4 md:p-8`}>
+          <div className="text-center mb-6 md:mb-8 p-4 md:p-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white">
+            <Award size={48} className="mx-auto mb-3 md:mb-4 md:w-16 md:h-16" />
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">Quiz Complete!</h3>
+            <p className="text-lg md:text-xl">
               Your Score: {quizScore} / {unit.quiz.length}
             </p>
-            <p className="text-lg mt-2">
+            <p className="text-base md:text-lg mt-2">
               {Math.round((quizScore / unit.quiz.length) * 100)}%
             </p>
           </div>
 
           {/* Results Navigation */}
           <div className="mb-6">
-            <div className="flex justify-between items-center">
-              <h4 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Review Results</h4>
-              <p className={colors.secondary}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <h4 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Review Results</h4>
+              <p className={`text-sm md:text-base ${colors.secondary}`}>
                 Question {currentQuestionIndex + 1} of {unit.quiz.length}
               </p>
             </div>
-            <div className="flex gap-2 mt-2">
-              {unit.quiz.map((_, idx) => {
-                const isCorrect = quizAnswers[idx] === unit.quiz[idx].correct;
+            <div className="flex gap-2 mt-3 flex-wrap justify-center sm:justify-start">
+              {unit.quiz.map((question, idx) => {
+                const isCorrect = quizAnswers[idx] === question.correct;
                 return (
                   <button
                     key={idx}
                     onClick={() => setCurrentQuestionIndex(idx)}
-                    className={`w-6 h-6 rounded-full text-xs font-bold text-white transition ${
+                    className={`w-10 h-10 md:w-8 md:h-8 rounded-full text-sm font-bold text-white transition touch-manipulation ${
                       idx === currentQuestionIndex
-                        ? 'ring-2 ring-indigo-300'
+                        ? 'ring-2 ring-indigo-300 scale-110'
                         : ''
                     } ${
                       isCorrect
@@ -124,25 +124,25 @@ const QuizView = ({
             <button
               onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
               disabled={currentQuestionIndex === 0}
-              className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50`}
+              className={`flex items-center gap-2 px-4 py-3 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] touch-manipulation`}
             >
               <ChevronLeft size={20} />
-              Previous
+              <span className="hidden sm:inline">Previous</span>
             </button>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2 md:gap-3">
               {currentQuestionIndex < unit.quiz.length - 1 ? (
                 <button
                   onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-                  className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.accent')} rounded-lg font-semibold transition`}
+                  className={`flex items-center gap-2 px-4 py-3 ${colors.get('button.accent')} rounded-lg font-semibold transition min-h-[44px] touch-manipulation`}
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
                   <ChevronRight size={20} />
                 </button>
               ) : (
                 <button
                   onClick={onBackToTopics}
-                  className={`px-6 py-2 ${colors.get('button.primary')} rounded-lg font-bold transition`}
+                  className={`px-4 md:px-6 py-3 ${colors.get('button.primary')} rounded-lg font-bold transition min-h-[44px] touch-manipulation`}
                 >
                   Back to Topics
                 </button>
@@ -158,23 +158,23 @@ const QuizView = ({
     <div>
       <button
         onClick={onBackToTopics}
-        className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold`}
+        className={`mb-4 px-4 py-3 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold min-h-[44px] touch-manipulation`}
       >
         ← Back to Topics
       </button>
-      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
-        <div className="mb-6">
-          <div className="flex justify-between items-start gap-4">
+      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-4 md:p-8`}>
+        <div className="mb-4 md:mb-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
             <div>
-              <h2 className={`text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')}`}>Unit {unit.id} Quiz</h2>
-              <p className={`${colors.secondary} mt-2`}>
+              <h2 className={`text-2xl md:text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')}`}>Unit {unit.id} Quiz</h2>
+              <p className={`text-sm md:text-base ${colors.secondary} mt-1 md:mt-2`}>
                 Question {currentQuestionIndex + 1} of {unit.quiz.length}
               </p>
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-2 justify-center lg:justify-start">
                 {unit.quiz.map((_, idx) => (
                   <div
                     key={idx}
-                    className={`w-3 h-3 rounded-full ${
+                    className={`w-4 h-4 md:w-3 md:h-3 rounded-full ${
                       idx === currentQuestionIndex
                         ? colors.conditional('bg-indigo-600', 'bg-indigo-500')
                         : quizAnswers[idx] !== undefined
@@ -187,7 +187,7 @@ const QuizView = ({
             </div>
             
             {/* Speech Controls */}
-            <div className="relative">
+            <div className="relative w-full lg:w-auto lg:flex-shrink-0">
               <SpeechControls
                 isSupported={isSupported}
                 isSpeaking={isSpeaking}
@@ -226,26 +226,26 @@ const QuizView = ({
           <button
             onClick={handlePreviousQuestion}
             disabled={isFirstQuestion}
-            className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50`}
+            className={`flex items-center gap-2 px-4 py-3 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] touch-manipulation`}
           >
             <ChevronLeft size={20} />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </button>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 md:gap-3">
             {!isLastQuestion ? (
               <button
                 onClick={handleNextQuestion}
-                className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.accent')} rounded-lg font-semibold transition`}
+                className={`flex items-center gap-2 px-4 py-3 ${colors.get('button.accent')} rounded-lg font-semibold transition min-h-[44px] touch-manipulation`}
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
                 <ChevronRight size={20} />
               </button>
             ) : (
               <button
                 onClick={handleSubmit}
                 disabled={!allQuestionsAnswered}
-                className={`px-6 py-2 ${colors.get('button.success')} text-white rounded-lg font-bold transition disabled:cursor-not-allowed disabled:opacity-50`}
+                className={`px-4 md:px-6 py-3 ${colors.get('button.success')} text-white rounded-lg font-bold transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] touch-manipulation text-sm md:text-base`}
               >
                 Submit Quiz
               </button>

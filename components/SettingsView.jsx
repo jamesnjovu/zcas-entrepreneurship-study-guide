@@ -1,4 +1,4 @@
-import { ChevronLeft, Volume2, Settings2, Zap, Eye, SkipForward, Play, Monitor, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Volume2, Settings2, Zap, Eye, SkipForward, Play, Monitor, Sun, Moon, TestTube } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { useApp, useThemeColors } from '../store';
 
@@ -18,6 +18,9 @@ const SettingsView = ({ onBack }) => {
     setAutoAdvance,
     setShowProgressBar,
     setAutoStart,
+    speak,
+    isSpeaking,
+    stop,
   } = useTextToSpeech();
 
   const { theme: { theme, isDark }, setTheme, toggleTheme } = useApp();
@@ -28,17 +31,17 @@ const SettingsView = ({ onBack }) => {
       <div>
         <button
           onClick={onBack}
-          className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow hover:shadow-md transition font-semibold`}
+          className={`mb-4 px-4 py-3 ${colors.get('button.accent')} rounded-lg shadow hover:shadow-md transition font-semibold min-h-[44px] touch-manipulation`}
         >
           <ChevronLeft className="inline mr-2" size={16} />
           Back
         </button>
         
-        <div className={`${colors.backgroundPrimary} rounded-lg shadow-lg p-8`}>
+        <div className={`${colors.backgroundPrimary} rounded-lg shadow-lg p-4 md:p-8`}>
           <div className="text-center">
-            <Volume2 size={64} className={`mx-auto mb-4 ${colors.muted}`} />
-            <h2 className={`text-2xl font-bold ${colors.primary} mb-2`}>Text-to-Speech Settings</h2>
-            <p className={colors.secondary}>Text-to-speech is not supported in your browser</p>
+            <Volume2 size={48} className={`mx-auto mb-3 md:mb-4 md:w-16 md:h-16 ${colors.muted}`} />
+            <h2 className={`text-xl md:text-2xl font-bold ${colors.primary} mb-2`}>Text-to-Speech Settings</h2>
+            <p className={`text-sm md:text-base ${colors.secondary}`}>Text-to-speech is not supported in your browser</p>
           </div>
         </div>
       </div>
@@ -49,28 +52,28 @@ const SettingsView = ({ onBack }) => {
     <div>
       <button
         onClick={onBack}
-        className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow hover:shadow-md transition font-semibold`}
+        className={`mb-4 px-4 py-3 ${colors.get('button.accent')} rounded-lg shadow hover:shadow-md transition font-semibold min-h-[44px] touch-manipulation`}
       >
         <ChevronLeft className="inline mr-2" size={16} />
         Back
       </button>
       
-      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
-        <div className="text-center mb-8">
-          <Settings2 size={64} className={`mx-auto mb-4 ${colors.conditional('text-indigo-600', 'text-indigo-400')}`} />
-          <h2 className={`text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')} mb-2`}>Settings</h2>
-          <p className={colors.secondary}>Customize your text-to-speech and learning experience</p>
+      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-4 md:p-8`}>
+        <div className="text-center mb-6 md:mb-8">
+          <Settings2 size={48} className={`mx-auto mb-3 md:mb-4 md:w-16 md:h-16 ${colors.conditional('text-indigo-600', 'text-indigo-400')}`} />
+          <h2 className={`text-2xl md:text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')} mb-2`}>Settings</h2>
+          <p className={`text-sm md:text-base ${colors.secondary}`}>Customize your text-to-speech and learning experience</p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:gap-8 grid-cols-1 lg:grid-cols-3">
           {/* Voice Settings */}
-          <div className="space-y-6">
-            <div className={`border-b ${colors.get('border.primary')} pb-4`}>
-              <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
-                <Volume2 className="mr-2" size={24} />
+          <div className="space-y-4 md:space-y-6">
+            <div className={`border-b ${colors.get('border.primary')} pb-3 md:pb-4`}>
+              <h3 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
+                <Volume2 className="mr-2" size={20} />
                 Voice Settings
               </h3>
-              <p className={`text-sm ${colors.secondary}`}>Configure speech voice, speed, and pitch</p>
+              <p className={`text-xs md:text-sm ${colors.secondary}`}>Configure speech voice, speed, and pitch</p>
             </div>
 
             {/* Voice Selection */}
@@ -84,7 +87,7 @@ const SettingsView = ({ onBack }) => {
                   const voice = voices.find(v => v.name === e.target.value);
                   setSelectedVoice(voice);
                 }}
-                className={`w-full px-3 py-2 border ${colors.get('border.primary')} ${colors.backgroundPrimary} ${colors.primary} rounded-lg text-sm ${colors.get('interactive.focus')} focus:border-transparent appearance-none`}
+                className={`w-full px-3 py-3 border ${colors.get('border.primary')} ${colors.backgroundPrimary} ${colors.primary} rounded-lg text-sm md:text-base ${colors.get('interactive.focus')} focus:border-transparent appearance-none min-h-[44px] touch-manipulation`}
               >
                 <option value="" disabled>
                   Select a voice...
@@ -98,6 +101,45 @@ const SettingsView = ({ onBack }) => {
                   </option>
                 ))}
               </select>
+              
+              {/* Voice Test */}
+              {selectedVoice && (
+                <div className="mt-3">
+                  <p className={`text-xs ${colors.secondary} mb-2`}>
+                    Test your voice settings with a sample message
+                  </p>
+                  <button
+                    onClick={() => {
+                      try {
+                        if (isSpeaking) {
+                          stop();
+                        } else {
+                          speak("Hello! This is a test of your selected voice settings. The voice sounds clear and the speed and pitch are working correctly.");
+                        }
+                      } catch (error) {
+                        console.error('Voice test failed:', error);
+                      }
+                    }}
+                    className={`w-full px-4 py-3 ${
+                      isSpeaking 
+                        ? colors.get('button.secondary')
+                        : colors.get('button.primary')
+                    } rounded-lg font-semibold transition min-h-[44px] touch-manipulation flex items-center justify-center gap-2`}
+                  >
+                    {isSpeaking ? (
+                      <>
+                        <Volume2 size={18} className="animate-pulse" />
+                        Stop Test
+                      </>
+                    ) : (
+                      <>
+                        <TestTube size={18} />
+                        Test Voice
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Speed Control */}
@@ -112,7 +154,7 @@ const SettingsView = ({ onBack }) => {
                 step="0.1"
                 value={rate}
                 onChange={(e) => setRate(parseFloat(e.target.value))}
-                className={`w-full h-2 ${colors.get('progress.background')} rounded-lg appearance-none cursor-pointer`}
+                className={`w-full h-3 md:h-2 ${colors.get('progress.background')} rounded-lg appearance-none cursor-pointer touch-manipulation`}
               />
               <div className={`flex justify-between text-xs ${colors.muted} mt-1`}>
                 <span>Slow (0.5x)</span>
@@ -133,7 +175,7 @@ const SettingsView = ({ onBack }) => {
                 step="0.1"
                 value={pitch}
                 onChange={(e) => setPitch(parseFloat(e.target.value))}
-                className={`w-full h-2 ${colors.get('progress.background')} rounded-lg appearance-none cursor-pointer`}
+                className={`w-full h-3 md:h-2 ${colors.get('progress.background')} rounded-lg appearance-none cursor-pointer touch-manipulation`}
               />
               <div className={`flex justify-between text-xs ${colors.muted} mt-1`}>
                 <span>Low (0.5)</span>
@@ -144,17 +186,17 @@ const SettingsView = ({ onBack }) => {
           </div>
 
           {/* Behavior Settings */}
-          <div className="space-y-6">
-            <div className={`border-b ${colors.get('border.primary')} pb-4`}>
-              <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
-                <Zap className="mr-2" size={24} />
+          <div className="space-y-4 md:space-y-6">
+            <div className={`border-b ${colors.get('border.primary')} pb-3 md:pb-4`}>
+              <h3 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
+                <Zap className="mr-2" size={20} />
                 Behavior Settings
               </h3>
-              <p className={`text-sm ${colors.secondary}`}>Control how speech behaves during study</p>
+              <p className={`text-xs md:text-sm ${colors.secondary}`}>Control how speech behaves during study</p>
             </div>
 
             {/* Auto-Start Setting */}
-            <div className={`p-4 ${colors.get('status.success.background')} ${colors.get('status.success.border')} rounded-lg border`}>
+            <div className={`p-3 md:p-4 ${colors.get('status.success.background')} ${colors.get('status.success.border')} rounded-lg border`}>
               <div className="flex items-start gap-3">
                 <div className={`p-2 ${colors.conditional('bg-green-100', 'bg-green-800')} rounded-lg`}>
                   <Play size={20} className={colors.conditional('text-green-600', 'text-green-400')} />
@@ -165,7 +207,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={autoStart}
                       onChange={(e) => setAutoStart(e.target.checked)}
-                      className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
+                      className="w-6 h-6 md:w-5 md:h-5 text-green-600 rounded focus:ring-green-500 touch-manipulation"
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Auto-start speech</span>
@@ -179,7 +221,7 @@ const SettingsView = ({ onBack }) => {
             </div>
 
             {/* Auto-Advance Setting */}
-            <div className={`p-4 ${colors.get('status.info.background')} ${colors.get('status.info.border')} rounded-lg border`}>
+            <div className={`p-3 md:p-4 ${colors.get('status.info.background')} ${colors.get('status.info.border')} rounded-lg border`}>
               <div className="flex items-start gap-3">
                 <div className={`p-2 ${colors.conditional('bg-blue-100', 'bg-blue-800')} rounded-lg`}>
                   <SkipForward size={20} className={colors.conditional('text-blue-600', 'text-blue-400')} />
@@ -190,7 +232,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={autoAdvance}
                       onChange={(e) => setAutoAdvance(e.target.checked)}
-                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                      className="w-6 h-6 md:w-5 md:h-5 text-blue-600 rounded focus:ring-blue-500 touch-manipulation"
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Auto-advance pages</span>
@@ -204,7 +246,7 @@ const SettingsView = ({ onBack }) => {
             </div>
 
             {/* Progress Bar Setting */}
-            <div className={`p-4 ${colors.get('status.purple.background')} ${colors.get('status.purple.border')} rounded-lg border`}>
+            <div className={`p-3 md:p-4 ${colors.get('status.purple.background')} ${colors.get('status.purple.border')} rounded-lg border`}>
               <div className="flex items-start gap-3">
                 <div className={`p-2 ${colors.conditional('bg-purple-100', 'bg-purple-800')} rounded-lg`}>
                   <Eye size={20} className={colors.conditional('text-purple-600', 'text-purple-400')} />
@@ -215,7 +257,7 @@ const SettingsView = ({ onBack }) => {
                       type="checkbox"
                       checked={showProgressBar}
                       onChange={(e) => setShowProgressBar(e.target.checked)}
-                      className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                      className="w-6 h-6 md:w-5 md:h-5 text-purple-600 rounded focus:ring-purple-500 touch-manipulation"
                     />
                     <div>
                       <span className={`font-medium ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Show progress bar</span>
@@ -230,13 +272,13 @@ const SettingsView = ({ onBack }) => {
           </div>
 
           {/* Theme Settings */}
-          <div className="space-y-6">
-            <div className={`border-b ${colors.get('border.primary')} pb-4`}>
-              <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
-                <Monitor className="mr-2" size={24} />
+          <div className="space-y-4 md:space-y-6">
+            <div className={`border-b ${colors.get('border.primary')} pb-3 md:pb-4`}>
+              <h3 className={`text-lg md:text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-2 flex items-center`}>
+                <Monitor className="mr-2" size={20} />
                 Theme Settings
               </h3>
-              <p className={`text-sm ${colors.secondary}`}>Customize the appearance of the application</p>
+              <p className={`text-xs md:text-sm ${colors.secondary}`}>Customize the appearance of the application</p>
             </div>
 
             {/* Theme Selection */}
@@ -257,7 +299,7 @@ const SettingsView = ({ onBack }) => {
                       value={value}
                       checked={theme === value}
                       onChange={(e) => setTheme(e.target.value)}
-                      className="w-4 h-4 text-indigo-600"
+                      className="w-5 h-5 md:w-4 md:h-4 text-indigo-600 touch-manipulation"
                     />
                     <div className="flex items-center gap-2">
                       <Icon size={16} className={isDark ? 'text-gray-300' : 'text-gray-600'} />
@@ -271,7 +313,7 @@ const SettingsView = ({ onBack }) => {
         </div>
 
         {/* Settings Info */}
-        <div className={`mt-8 p-4 ${colors.backgroundSecondary} rounded-lg`}>
+        <div className={`mt-6 md:mt-8 p-3 md:p-4 ${colors.backgroundSecondary} rounded-lg`}>
           <div className="flex items-start gap-3">
             <Settings2 size={20} className={`${colors.muted} mt-0.5`} />
             <div>

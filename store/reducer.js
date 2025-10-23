@@ -161,7 +161,7 @@ const studyReducer = (state, action) => {
     case STUDY_ACTIONS.SUBMIT_QUIZ: {
       // Calculate score
       const answers = action.payload;
-      const quiz = state.selectedUnit?.quiz?.questions || [];
+      const quiz = state.selectedUnit?.quiz || [];
       let score = 0;
       
       quiz.forEach((question, idx) => {

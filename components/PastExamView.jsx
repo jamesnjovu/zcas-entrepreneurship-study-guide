@@ -208,51 +208,52 @@ const PastExamView = ({
       <div>
         <button
           onClick={onBackToHome}
-          className={`mb-4 px-4 py-2 rounded-lg shadow hover:shadow-md transition font-semibold ${colors.get('button.secondary')}`}
+          className={`mb-4 px-4 py-3 rounded-lg shadow hover:shadow-md transition font-semibold min-h-[44px] touch-manipulation ${colors.get('button.secondary')}`}
         >
           <ChevronLeft className="inline mr-2" size={16} />
           Back to Home
         </button>
         
-        <div className={`rounded-lg shadow-lg p-8 ${colors.backgroundPrimary} text-white`}>
-          <div className="text-center mb-8">
-            <BookOpen size={64} className="mx-auto mb-4 text-indigo-600" />
-            <h2 className={`text-3xl font-bold mb-2 ${colors.primary}`}>Past Exam Questions</h2>
-            <p className={colors.secondary}>Study previous exam papers with model answers</p>
+        <div className={`rounded-lg shadow-lg p-4 md:p-8 ${colors.backgroundPrimary} text-white`}>
+          <div className="text-center mb-6 md:mb-8">
+            <BookOpen size={48} className="mx-auto mb-3 md:mb-4 text-indigo-600 md:w-16 md:h-16" />
+            <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${colors.primary}`}>Past Exam Questions</h2>
+            <p className={`text-sm md:text-base ${colors.secondary}`}>Study previous exam papers with model answers</p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {pastExamQuestions.map((exam) => (
               <div
                 key={exam.id}
                 onClick={() => handleExamSelect(exam)}
-                className={`p-6 rounded-lg border-2 cursor-pointer transition group ${colors.get('gradient.card')} ${colors.get('examCard.border')} ${colors.get('gradient.cardHover')}`}
+                className={`p-4 md:p-6 rounded-lg border-2 cursor-pointer transition group min-h-[180px] md:min-h-[200px] touch-manipulation ${colors.get('gradient.card')} ${colors.get('examCard.border')} ${colors.get('gradient.cardHover')}`}
               >
-                <div className="flex items-center mb-4">
-                  <Calendar className={`mr-3 ${colors.get('examCard.yearIcon')}`} size={24} />
+                <div className="flex items-center mb-3 md:mb-4">
+                  <Calendar className={`mr-2 md:mr-3 ${colors.get('examCard.yearIcon')}`} size={20} />
                   <span className={`text-sm font-semibold ${colors.get('examCard.year')}`}>{exam.year}</span>
                 </div>
                 
-                <h3 className={`text-xl font-bold mb-2 transition ${colors.get('examCard.title')}`}>
+                <h3 className={`text-lg md:text-xl font-bold mb-2 transition ${colors.get('examCard.title')}`}>
                   {exam.examInfo.courseName}
                 </h3>
                 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-3 md:mb-4">
                   <div className={`flex items-center ${colors.secondary}`}>
-                    <Clock className="mr-2" size={16} />
-                    <span className="text-sm">{exam.examInfo.duration}</span>
+                    <Clock className="mr-2" size={14} />
+                    <span className="text-xs md:text-sm">{exam.examInfo.duration}</span>
                   </div>
                   <div className={`flex items-center ${colors.secondary}`}>
-                    <FileText className="mr-2" size={16} />
-                    <span className="text-sm">{exam.sections.length} sections</span>
+                    <FileText className="mr-2" size={14} />
+                    <span className="text-xs md:text-sm">{exam.sections.length} sections</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm ${colors.get('examCard.actionText')}`}>
-                    Click to start
+                <div className="flex items-center justify-between mt-auto">
+                  <span className={`text-xs md:text-sm ${colors.get('examCard.actionText')}`}>
+                    <span className="hidden sm:inline">Click to start</span>
+                    <span className="sm:hidden">Start</span>
                   </span>
-                  <ChevronRight className={`transition ${colors.get('examCard.chevron')}`} size={20} />
+                  <ChevronRight className={`transition ${colors.get('examCard.chevron')}`} size={18} />
                 </div>
               </div>
             ))}
@@ -267,24 +268,24 @@ const PastExamView = ({
     <div>
       <button
         onClick={handleBackToExamList}
-        className={`mb-4 px-4 py-2 rounded-lg shadow hover:shadow-md transition font-semibold ${isDark ? 'bg-gray-800 text-indigo-400 hover:bg-gray-700' : 'bg-white text-indigo-600'}`}
+        className={`mb-4 px-4 py-3 rounded-lg shadow hover:shadow-md transition font-semibold min-h-[44px] touch-manipulation ${isDark ? 'bg-gray-800 text-indigo-400 hover:bg-gray-700' : 'bg-white text-indigo-600'}`}
       >
         <ChevronLeft className="inline mr-2" size={16} />
         Back to Past Exams
       </button>
       
-      <div className={`rounded-lg shadow-lg p-8 ${isDark ? 'bg-gray-800 text-white' : 'bg-white'}`}>
+      <div className={`rounded-lg shadow-lg p-4 md:p-8 ${isDark ? 'bg-gray-800 text-white' : 'bg-white'}`}>
         {/* Progress Header */}
-        <div className="mb-6">
-          <div className="flex justify-between items-start gap-4">
+        <div className="mb-4 md:mb-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
             <div>
-              <h2 className={`text-3xl font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-900'}`}>
+              <h2 className={`text-2xl md:text-3xl font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-900'}`}>
                 {selectedExam.examInfo.courseName}
               </h2>
-              <p className={`mt-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className={`mt-1 md:mt-2 text-sm md:text-base ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 Page {currentPageIndex + 1} of {examPages.length}
               </p>
-              <div className="flex gap-2 mt-2 flex-wrap">
+              <div className="flex gap-2 mt-2 flex-wrap justify-center lg:justify-start">
                 {examPages.map((page, idx) => {
                   let dotColor = 'bg-gray-300';
                   if (idx === currentPageIndex) {
@@ -300,7 +301,7 @@ const PastExamView = ({
                   return (
                     <div
                       key={idx}
-                      className={`w-3 h-3 rounded-full ${dotColor}`}
+                      className={`w-4 h-4 md:w-3 md:h-3 rounded-full ${dotColor}`}
                       title={`${page.type === 'examInfo' ? 'Exam Info' : 
                               page.type === 'sectionInfo' ? `Section ${page.sectionId}` :
                               `Question ${page.content.id}`}`}
@@ -311,7 +312,7 @@ const PastExamView = ({
             </div>
             
             {/* Speech Controls */}
-            <div className="relative">
+            <div className="relative w-full lg:w-auto lg:flex-shrink-0">
               <SpeechControls
                 isSupported={isSupported}
                 isSpeaking={isSpeaking}
@@ -366,18 +367,18 @@ const PastExamView = ({
         </div>
 
         {/* Page Content */}
-        <div className="min-h-96">
+        <div className="min-h-[300px] md:min-h-96">
           {/* Exam Info Page */}
           {currentPage.type === 'examInfo' && (
-            <div className="space-y-6">
-              <div className={`text-center p-8 rounded-lg text-white ${
+            <div className="space-y-4 md:space-y-6">
+              <div className={`text-center p-4 md:p-8 rounded-lg text-white ${
                 isDark 
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-700' 
                   : 'bg-gradient-to-r from-indigo-500 to-purple-600'
               }`}>
-                <Info size={64} className="mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">{currentPage.content.title}</h3>
-                <h4 className="text-xl mb-4">{currentPage.content.courseName}</h4>
+                <Info size={48} className="mx-auto mb-3 md:mb-4 md:w-16 md:h-16" />
+                <h3 className="text-xl md:text-2xl font-bold mb-2">{currentPage.content.title}</h3>
+                <h4 className="text-lg md:text-xl mb-3 md:mb-4">{currentPage.content.courseName}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <p><strong>Date:</strong> {currentPage.content.date}</p>
@@ -549,7 +550,8 @@ const PastExamView = ({
                       }`}
                     >
                       {showModelAnswers ? <EyeOff className="mr-2" size={18} /> : <Eye className="mr-2" size={18} />}
-                      {showModelAnswers ? 'Hide Model Answer' : 'Show Model Answer'}
+                      <span className="hidden sm:inline">{showModelAnswers ? 'Hide Model Answer' : 'Show Model Answer'}</span>
+                      <span className="sm:hidden">{showModelAnswers ? 'Hide Answer' : 'Show Answer'}</span>
                     </button>
                   </div>
 
@@ -598,7 +600,8 @@ const PastExamView = ({
                       }`}
                     >
                       {showModelAnswers ? <EyeOff className="mr-2" size={18} /> : <Eye className="mr-2" size={18} />}
-                      {showModelAnswers ? 'Hide Model Answers' : 'Show Model Answers'}
+                      <span className="hidden sm:inline">{showModelAnswers ? 'Hide Model Answers' : 'Show Model Answers'}</span>
+                      <span className="sm:hidden">{showModelAnswers ? 'Hide Answers' : 'Show Answers'}</span>
                     </button>
                   </div>
 
@@ -675,22 +678,22 @@ const PastExamView = ({
         </div>
 
         {/* Navigation Controls */}
-        <div className="flex justify-between items-center mt-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 md:mt-8 gap-4 sm:gap-0">
           <button
             onClick={handlePreviousPage}
             disabled={isFirstPage}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition disabled:cursor-not-allowed ${
+            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition disabled:cursor-not-allowed min-h-[44px] touch-manipulation w-full sm:w-auto ${
               isDark 
                 ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400'
             }`}
           >
             <ChevronLeft size={20} />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </button>
 
-          <div className="text-center">
-            <span className={`text-sm ${
+          <div className="text-center order-first sm:order-none">
+            <span className={`text-xs md:text-sm ${
               isDark ? 'text-gray-300' : 'text-gray-600'
             }`}>
               {currentPage.type === 'examInfo' ? 'Exam Information' :
@@ -699,23 +702,23 @@ const PastExamView = ({
             </span>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 md:gap-3 w-full sm:w-auto">
             {!isLastPage ? (
               <button
                 onClick={handleNextPage}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition ${
+                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition min-h-[44px] touch-manipulation w-full sm:w-auto ${
                   isDark 
                     ? 'bg-indigo-900 bg-opacity-50 text-indigo-300 hover:bg-indigo-800 hover:bg-opacity-60' 
                     : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
                 }`}
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
                 <ChevronRight size={20} />
               </button>
             ) : (
               <button
                 onClick={handleBackToExamList}
-                className={`px-6 py-2 rounded-lg font-bold transition text-white ${
+                className={`px-4 md:px-6 py-3 rounded-lg font-bold transition text-white min-h-[44px] touch-manipulation w-full sm:w-auto text-sm md:text-base ${
                   isDark 
                     ? 'bg-green-700 hover:bg-green-600' 
                     : 'bg-green-600 hover:bg-green-700'

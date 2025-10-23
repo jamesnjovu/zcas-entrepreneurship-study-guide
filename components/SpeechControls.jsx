@@ -34,18 +34,19 @@ const SpeechControls = ({
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-1 md:gap-2 ${className}`}>
       {/* Main controls */}
       <div className={`flex items-center gap-1 rounded-lg p-1 ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
         {!isSpeaking ? (
           <button
             onClick={onSpeak}
-            className={`flex items-center gap-1 px-3 py-1 text-white rounded transition ${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
+            className={`flex items-center gap-1 px-2 md:px-3 py-2 text-white rounded transition min-h-[40px] touch-manipulation ${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}`}
             title="Read current page aloud and automatically advance to next page when finished"
           >
             <Volume2 size={16} />
-            <span className="text-sm">
-              {autoAdvance ? 'Listen & Auto-Advance' : 'Listen'}
+            <span className="text-xs md:text-sm">
+              <span className="hidden sm:inline">{autoAdvance ? 'Listen & Auto-Advance' : 'Listen'}</span>
+              <span className="sm:hidden">Listen</span>
             </span>
           </button>
         ) : (
@@ -53,7 +54,7 @@ const SpeechControls = ({
             {!isPaused ? (
               <button
                 onClick={onPause}
-                className={`p-1 rounded transition ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
+                className={`p-2 rounded transition min-h-[36px] min-w-[36px] touch-manipulation ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
                 title="Pause"
               >
                 <Pause size={16} />
@@ -61,7 +62,7 @@ const SpeechControls = ({
             ) : (
               <button
                 onClick={onResume}
-                className={`p-1 rounded transition ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
+                className={`p-2 rounded transition min-h-[36px] min-w-[36px] touch-manipulation ${isDark ? 'text-blue-400 hover:bg-gray-600' : 'text-blue-600 hover:bg-blue-100'}`}
                 title="Resume"
               >
                 <Play size={16} />
@@ -69,7 +70,7 @@ const SpeechControls = ({
             )}
             <button
               onClick={onStop}
-              className={`p-1 rounded transition ${isDark ? 'text-red-400 hover:bg-gray-600' : 'text-red-600 hover:bg-red-100'}`}
+              className={`p-2 rounded transition min-h-[36px] min-w-[36px] touch-manipulation ${isDark ? 'text-red-400 hover:bg-gray-600' : 'text-red-600 hover:bg-red-100'}`}
               title="Stop"
             >
               <Square size={16} />
