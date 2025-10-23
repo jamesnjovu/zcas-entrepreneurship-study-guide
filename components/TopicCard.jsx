@@ -1,28 +1,23 @@
 import { ChevronRight } from 'lucide-react';
-import { useApp } from '../store';
+import { useApp, useThemeColors } from '../store';
 
 const TopicCard = ({ topic, onSelect }) => {
   const { theme: { isDark, mounted } } = useApp();
+  const colors = useThemeColors(isDark);
   
   // Apply theme even when not mounted
   if (!mounted) {
     return (
       <div
         onClick={() => onSelect(topic)}
-        className={`rounded-lg shadow-md p-5 cursor-pointer hover:shadow-lg transform hover:-translate-y-1 transition ${
-          isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
-        }`}
+        className={`rounded-lg shadow-md p-5 cursor-pointer hover:shadow-lg transform hover:-translate-y-1 transition ${colors.backgroundPrimary} ${colors.primary}`}
       >
         <div className="flex items-center justify-between">
           <div>
-            <span className={`text-sm font-semibold ${
-              isDark ? 'text-indigo-400' : 'text-indigo-600'
-            }`}>
+            <span className={`text-sm font-semibold ${colors.conditional('text-indigo-600', 'text-indigo-400')}`}>
               Topic {topic.id}
             </span>
-            <h3 className={`text-lg font-bold mt-1 ${
-              isDark ? 'text-gray-100' : 'text-gray-800'
-            }`}>
+            <h3 className={`text-lg font-bold mt-1 ${colors.conditional('text-gray-800', 'text-gray-100')}`}>
               {topic.title}
             </h3>
           </div>
@@ -35,20 +30,14 @@ const TopicCard = ({ topic, onSelect }) => {
   return (
     <div
       onClick={() => onSelect(topic)}
-      className={`rounded-lg shadow-md p-5 cursor-pointer hover:shadow-lg transform hover:-translate-y-1 transition ${
-        isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
-      }`}
+      className={`rounded-lg shadow-md p-5 cursor-pointer hover:shadow-lg transform hover:-translate-y-1 transition ${colors.backgroundPrimary} ${colors.primary}`}
     >
       <div className="flex items-center justify-between">
         <div>
-          <span className={`text-sm font-semibold ${
-            isDark ? 'text-indigo-400' : 'text-indigo-600'
-          }`}>
+          <span className={`text-sm font-semibold ${colors.conditional('text-indigo-600', 'text-indigo-400')}`}>
             Topic {topic.id}
           </span>
-          <h3 className={`text-lg font-bold mt-1 ${
-            isDark ? 'text-gray-100' : 'text-gray-800'
-          }`}>
+          <h3 className={`text-lg font-bold mt-1 ${colors.conditional('text-gray-800', 'text-gray-100')}`}>
             {topic.title}
           </h3>
         </div>

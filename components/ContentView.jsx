@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Award, Check } from 'lucide-react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useApp } from '../store';
+import { useApp, useThemeColors } from '../store';
 import SpeechControls from './SpeechControls';
 import FloatingProgressBar from './FloatingProgressBar';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -49,6 +49,7 @@ const ContentView = ({
   } = useTextToSpeech();
 
   const { theme: { isDark } } = useApp();
+  const colors = useThemeColors(isDark);
   const [showFloatingBar, setShowFloatingBar] = useState(true);
   const readingStartTime = useRef(null);
   const trackReadingTimeRef = useRef(trackReadingTime);
@@ -154,27 +155,27 @@ const ContentView = ({
     <div>
       <button
         onClick={onBackToTopics}
-        className="mb-4 px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition text-indigo-600 font-semibold"
+        className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow hover:shadow-md transition font-semibold`}
       >
         ← Back to Topics
       </button>
       
-      <div className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow-lg p-8`}>
+      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
         <div className="mb-6">
           <div className="flex justify-between items-start gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <span className={`text-sm ${isDark ? 'text-indigo-400' : 'text-indigo-600'} font-semibold`}>Topic {topic.id}</span>
+                <span className={`text-sm ${colors.conditional('text-indigo-600', 'text-indigo-400')} font-semibold`}>Topic {topic.id}</span>
                 <button
                   onClick={handleMarkComplete}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition ${isDark ? 'bg-green-800 text-green-200 hover:bg-green-700' : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition ${colors.get('status.success.background')} ${colors.get('status.success.text')} hover:${colors.get('status.success.textSecondary')}`}
                   title="Mark as completed"
                 >
                   <Check size={12} />
                   Complete
                 </button>
               </div>
-              <h2 className={`text-3xl font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-900'} mt-1`}>{topic.title}</h2>
+              <h2 className={`text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')} mt-1`}>{topic.title}</h2>
             </div>
             
             {/* Speech Controls */}
@@ -207,14 +208,14 @@ const ContentView = ({
         
         {topic.content.map((section, idx) => (
           <div key={idx} className="mb-8">
-            <h3 className={`text-xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'} mb-4 border-l-4 ${isDark ? 'border-indigo-400' : 'border-indigo-500'} pl-4`}>
+            <h3 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')} mb-4 border-l-4 ${colors.conditional('border-indigo-500', 'border-indigo-400')} pl-4`}>
               {section.heading}
             </h3>
             <ul className="space-y-3">
               {section.points.map((point, pidx) => (
                 <li key={pidx} className="flex items-start gap-3">
-                  <span className={`${isDark ? 'text-indigo-400' : 'text-indigo-500'} mt-1`}>•</span>
-                  <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{point}</span>
+                  <span className={`${colors.conditional('text-indigo-500', 'text-indigo-400')} mt-1`}>•</span>
+                  <span className={colors.secondary}>{point}</span>
                 </li>
               ))}
             </ul>
@@ -222,14 +223,14 @@ const ContentView = ({
         ))}
         
         {/* Navigation and Quiz buttons */}
-        <div className={`mt-8 pt-6 border-t ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+        <div className={`mt-8 pt-6 border-t ${colors.get('border.primary')}`}>
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             {/* Navigation buttons */}
             <div className="flex gap-2">
               <button
                 onClick={onPreviousTopic}
                 disabled={isFirstTopic}
-                className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <ChevronLeft size={20} />
                 Previous Topic
@@ -239,7 +240,7 @@ const ContentView = ({
               {isLastTopic && hasNextUnit ? (
                 <button
                   onClick={onNextUnit}
-                  className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-indigo-700 text-indigo-200 hover:bg-indigo-600' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'} rounded-lg transition font-medium`}
+                  className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.accent')} rounded-lg transition font-medium`}
                   title={`Go to Unit ${nextUnit?.id}: ${nextUnit?.title}`}
                 >
                   <span className="hidden sm:inline">Next Unit:</span>
@@ -251,7 +252,7 @@ const ContentView = ({
                 <button
                   onClick={onNextTopic}
                   disabled={isLastTopic}
-                  className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
+                  className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   Next Topic
                   <ChevronRight size={20} />
@@ -262,7 +263,7 @@ const ContentView = ({
             {/* Take Quiz button */}
             <button
               onClick={onStartQuiz}
-              className={`flex items-center gap-2 px-6 py-2 ${isDark ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'} text-white rounded-lg transition font-semibold`}
+              className={`flex items-center gap-2 px-6 py-2 ${colors.get('button.success')} text-white rounded-lg transition font-semibold`}
             >
               <Award size={20} />
               Take Unit Quiz

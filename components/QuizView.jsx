@@ -1,7 +1,7 @@
 import { Award, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
-import { useApp } from '../store';
+import { useApp, useThemeColors } from '../store';
 import SpeechControls from './SpeechControls';
 import QuizQuestion from './QuizQuestion';
 
@@ -16,6 +16,7 @@ const QuizView = ({
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const { theme: { isDark } } = useApp();
+  const colors = useThemeColors(isDark);
   
   const {
     isSupported,
@@ -58,11 +59,11 @@ const QuizView = ({
       <div>
         <button
           onClick={onBackToTopics}
-          className={`mb-4 px-4 py-2 ${isDark ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-indigo-600 hover:shadow-md'} rounded-lg shadow transition font-semibold`}
+          className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold`}
         >
           ← Back to Topics
         </button>
-        <div className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow-lg p-8`}>
+        <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
           <div className="text-center mb-8 p-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg text-white">
             <Award size={64} className="mx-auto mb-4" />
             <h3 className="text-3xl font-bold mb-2">Quiz Complete!</h3>
@@ -77,8 +78,8 @@ const QuizView = ({
           {/* Results Navigation */}
           <div className="mb-6">
             <div className="flex justify-between items-center">
-              <h4 className={`text-xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>Review Results</h4>
-              <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
+              <h4 className={`text-xl font-bold ${colors.conditional('text-gray-800', 'text-gray-100')}`}>Review Results</h4>
+              <p className={colors.secondary}>
                 Question {currentQuestionIndex + 1} of {unit.quiz.length}
               </p>
             </div>
@@ -123,7 +124,7 @@ const QuizView = ({
             <button
               onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
               disabled={currentQuestionIndex === 0}
-              className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400'} rounded-lg font-semibold transition disabled:cursor-not-allowed`}
+              className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50`}
             >
               <ChevronLeft size={20} />
               Previous
@@ -133,7 +134,7 @@ const QuizView = ({
               {currentQuestionIndex < unit.quiz.length - 1 ? (
                 <button
                   onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-                  className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-indigo-800 text-indigo-200 hover:bg-indigo-700' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'} rounded-lg font-semibold transition`}
+                  className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.accent')} rounded-lg font-semibold transition`}
                 >
                   Next
                   <ChevronRight size={20} />
@@ -141,7 +142,7 @@ const QuizView = ({
               ) : (
                 <button
                   onClick={onBackToTopics}
-                  className={`px-6 py-2 ${isDark ? 'bg-indigo-700 hover:bg-indigo-600' : 'bg-indigo-600 hover:bg-indigo-700'} text-white rounded-lg font-bold transition`}
+                  className={`px-6 py-2 ${colors.get('button.primary')} rounded-lg font-bold transition`}
                 >
                   Back to Topics
                 </button>
@@ -157,16 +158,16 @@ const QuizView = ({
     <div>
       <button
         onClick={onBackToTopics}
-        className={`mb-4 px-4 py-2 ${isDark ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-indigo-600 hover:shadow-md'} rounded-lg shadow transition font-semibold`}
+        className={`mb-4 px-4 py-2 ${colors.get('button.accent')} rounded-lg shadow transition font-semibold`}
       >
         ← Back to Topics
       </button>
-      <div className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow-lg p-8`}>
+      <div className={`${colors.backgroundPrimary} ${colors.primary} rounded-lg shadow-lg p-8`}>
         <div className="mb-6">
           <div className="flex justify-between items-start gap-4">
             <div>
-              <h2 className={`text-3xl font-bold ${isDark ? 'text-indigo-300' : 'text-indigo-900'}`}>Unit {unit.id} Quiz</h2>
-              <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} mt-2`}>
+              <h2 className={`text-3xl font-bold ${colors.conditional('text-indigo-900', 'text-indigo-300')}`}>Unit {unit.id} Quiz</h2>
+              <p className={`${colors.secondary} mt-2`}>
                 Question {currentQuestionIndex + 1} of {unit.quiz.length}
               </p>
               <div className="flex gap-2 mt-2">
@@ -175,10 +176,10 @@ const QuizView = ({
                     key={idx}
                     className={`w-3 h-3 rounded-full ${
                       idx === currentQuestionIndex
-                        ? (isDark ? 'bg-indigo-500' : 'bg-indigo-600')
+                        ? colors.conditional('bg-indigo-600', 'bg-indigo-500')
                         : quizAnswers[idx] !== undefined
-                        ? (isDark ? 'bg-green-500' : 'bg-green-400')
-                        : (isDark ? 'bg-gray-600' : 'bg-gray-300')
+                        ? colors.conditional('bg-green-400', 'bg-green-500')
+                        : colors.conditional('bg-gray-300', 'bg-gray-600')
                     }`}
                   />
                 ))}
@@ -225,7 +226,7 @@ const QuizView = ({
           <button
             onClick={handlePreviousQuestion}
             disabled={isFirstQuestion}
-            className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400'} rounded-lg font-semibold transition disabled:cursor-not-allowed`}
+            className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.secondary')} rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:opacity-50`}
           >
             <ChevronLeft size={20} />
             Previous
@@ -235,7 +236,7 @@ const QuizView = ({
             {!isLastQuestion ? (
               <button
                 onClick={handleNextQuestion}
-                className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-indigo-800 text-indigo-200 hover:bg-indigo-700' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'} rounded-lg font-semibold transition`}
+                className={`flex items-center gap-2 px-4 py-2 ${colors.get('button.accent')} rounded-lg font-semibold transition`}
               >
                 Next
                 <ChevronRight size={20} />
@@ -244,7 +245,7 @@ const QuizView = ({
               <button
                 onClick={handleSubmit}
                 disabled={!allQuestionsAnswered}
-                className={`px-6 py-2 ${isDark ? 'bg-green-700 hover:bg-green-600 disabled:bg-gray-700' : 'bg-green-600 hover:bg-green-700 disabled:bg-gray-300'} text-white rounded-lg font-bold transition disabled:cursor-not-allowed`}
+                className={`px-6 py-2 ${colors.get('button.success')} text-white rounded-lg font-bold transition disabled:cursor-not-allowed disabled:opacity-50`}
               >
                 Submit Quiz
               </button>

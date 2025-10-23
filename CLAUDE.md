@@ -221,9 +221,9 @@ The application is production-ready and optimized for static hosting:
 - **🎮 Floating Seekable Progress Bar**: Draggable progress bar with play/pause/stop controls and click/drag seeking
 - **🧠 User Intention Tracking**: Advanced pause/stop behavior that respects user actions over auto-start preferences
 - **📊 Global State Management**: Redux-like architecture with centralized actions, reducers, and computed values
-- **🎨 Consistent Theme System**: Unified dark/light mode across all components with SSR hydration support
+- **🎨 Centralized Theme System**: Unified theme color management with all components using centralized theme colors
 - **💾 Enhanced Persistence**: Debounced auto-save with state hydration and cross-session continuity
-- **🚀 Production Ready**: Optimized build with debug logs removed, 45.1kB main bundle, fully deployable
+- **🚀 Production Ready**: Optimized build with debug logs removed, 46.4kB main bundle, fully deployable
 - **📱 PWA Support**: Complete Progressive Web App with service worker, offline support, and installable experience
 
 ### ✅ Previously Completed Features
@@ -236,11 +236,12 @@ The application is production-ready and optimized for static hosting:
 
 ### 🔧 Technical Architecture Improvements
 - ✅ **Redux-like State Management**: Centralized store with actions, reducers, and computed values
+- ✅ **Centralized Theme Color System**: Single source of truth for all theme colors with semantic naming
 - ✅ **Text Chunking System**: Sentence-based text parsing for precise seeking and progress tracking
 - ✅ **Multi-flag User Intent System**: Sophisticated tracking of user pause/stop vs auto-advance preferences
 - ✅ **SSR-Safe Theme Hydration**: Prevents hydration mismatches with proper mounted state handling
 - ✅ **Debounced Persistence**: Optimized localStorage writes with automatic state recovery
-- ✅ **Component Theme Consistency**: Unified conditional styling across all UI components
+- ✅ **Component Theme Consistency**: All components use centralized theme system for unified styling
 
 ## Technical Implementation Details
 
@@ -290,14 +291,36 @@ Smart navigation with unit-to-unit progression and context-aware button display:
 - **Seamless Transitions**: Direct navigation to first topic of next unit
 - **Auto-Advance Compatible**: Works with speech auto-advance functionality
 
-### Theme System Implementation
-Consistent theming across all components with SSR hydration support:
+### Centralized Theme Color System
+Comprehensive theme management with centralized color definitions and consistent application:
 
 **Theme Architecture:**
-- **Conditional Styling**: All components use `isDark` flag for consistent theme application
+- **Single Source of Truth**: All theme colors defined in `store/themeColors.js`
+- **Semantic Naming**: Colors organized by purpose (primary, secondary, status, buttons, etc.)
+- **Multiple Usage Patterns**: Direct properties, dot notation, and conditional helpers
 - **SSR-Safe Hydration**: `mounted` flag prevents hydration mismatches
-- **Component Consistency**: Standardized theme application across UnitCard, TopicCard, etc.
-- **DOM Integration**: Theme classes applied to document root for Tailwind dark: modifiers
+- **Universal Implementation**: All components use centralized theme system
+
+**Usage Patterns:**
+```javascript
+// Method 1: Direct properties (most common)
+const colors = useThemeColors(isDark);
+<h1 className={colors.primary}>Title</h1>
+
+// Method 2: Dot notation with get() function
+<button className={colors.get('button.primary')}>Click me</button>
+
+// Method 3: Conditional helper
+<div className={colors.conditional('bg-white', 'bg-gray-800')}>Content</div>
+```
+
+**Color Categories:**
+- **Text Colors**: `primary`, `secondary`, `muted` with automatic dark/light variants
+- **Backgrounds**: `backgroundPrimary`, `backgroundSecondary`, `backgroundTertiary`
+- **Buttons**: `button.primary`, `button.secondary`, `button.accent`, `button.success`
+- **Status Colors**: `status.info`, `status.warning`, `status.success`, `status.error`
+- **Interactive**: `interactive.hover`, `interactive.focus` with proper contrast
+- **Component-Specific**: `examCard.*`, `card.*`, `input.*` for specialized use cases
 
 ## Future Enhancements
 - **Enhanced Progress Analytics**: Detailed learning insights and performance tracking

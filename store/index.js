@@ -16,5 +16,8 @@ export {
   statePersistence 
 } from './storage.js';
 
+// Theme colors management
+export { themeColors, getThemeColor, useThemeColors } from './themeColors.js';
+
 // Re-export types for convenience
 export * from './types.js';
