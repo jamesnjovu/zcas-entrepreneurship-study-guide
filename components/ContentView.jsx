@@ -3,16 +3,19 @@ import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { useApp } from '../store';
 import SpeechControls from './SpeechControls';
 import FloatingProgressBar from './FloatingProgressBar';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 const ContentView = ({ 
   topic, 
   onBackToTopics, 
   onNextTopic, 
-  onPreviousTopic, 
+  onPreviousTopic,
+  onNextUnit,
   onStartQuiz,
   isFirstTopic, 
   isLastTopic,
+  hasNextUnit,
+  nextUnit,
   markTopicCompleted,
   trackReadingTime
 }) => {
@@ -55,18 +58,7 @@ const ContentView = ({
     trackReadingTimeRef.current = trackReadingTime;
   }, [trackReadingTime]);
 
-  const handleAutoAdvanceToNextTopic = () => {
-    if (!isLastTopic && autoAdvance) {
-      setTimeout(() => {
-        handleTopicCompletion();
-        // Reset user stopped flag before advancing to allow auto-start on next topic
-        resetUserStoppedFlag();
-        onNextTopic();
-      }, 1000);
-    }
-  };
-
-  const handleTopicCompletion = () => {
+  const handleTopicCompletion = useCallback(() => {
     if (markTopicCompleted) {
       markTopicCompleted();
     }
@@ -81,13 +73,32 @@ const ContentView = ({
         readingStartTime.current = Date.now();
       }
     }
-  };
+  }, [markTopicCompleted, topic]);
+
+  const handleAutoAdvanceToNextTopic = useCallback(() => {
+    if (autoAdvance) {
+      setTimeout(() => {
+        handleTopicCompletion();
+        // Reset user stopped flag before advancing to allow auto-start on next topic/unit
+        resetUserStoppedFlag();
+        
+        if (!isLastTopic) {
+          // Not the last topic, advance to next topic in current unit
+          onNextTopic();
+        } else if (hasNextUnit) {
+          // Last topic of current unit and there's a next unit available
+          onNextUnit();
+        }
+        // If it's the last topic of the last unit, do nothing (no more content)
+      }, 1000);
+    }
+  }, [autoAdvance, isLastTopic, hasNextUnit, onNextTopic, onNextUnit, resetUserStoppedFlag, handleTopicCompletion]);
 
   const handleMarkComplete = () => {
     handleTopicCompletion();
   };
 
-  const handleSpeak = () => {
+  const handleSpeak = useCallback(() => {
     // Convert topic content to text for the new speak function
     let textToSpeak = `${topic.title}. `;
     topic.content.forEach((section) => {
@@ -97,8 +108,9 @@ const ContentView = ({
       });
     });
     
-    speak(textToSpeak, autoAdvance && !isLastTopic ? handleAutoAdvanceToNextTopic : null, true);
-  };
+    const shouldAutoAdvance = autoAdvance && (!isLastTopic || hasNextUnit);
+    speak(textToSpeak, shouldAutoAdvance ? handleAutoAdvanceToNextTopic : null, true);
+  }, [topic, speak, autoAdvance, isLastTopic, hasNextUnit, handleAutoAdvanceToNextTopic]);
 
   // Track reading start time and auto-start speech
   useEffect(() => {
@@ -116,7 +128,7 @@ const ContentView = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [topic, autoStart, userStoppedPlayback, handleSpeak]);
+  }, [topic.id, autoStart, userStoppedPlayback, handleSpeak]); // Need handleSpeak but let's see if the issue persists
 
   // Separate effect to reset user stopped flag only when topic ID actually changes
   useEffect(() => {
@@ -223,14 +235,28 @@ const ContentView = ({
                 Previous Topic
               </button>
               
-              <button
-                onClick={onNextTopic}
-                disabled={isLastTopic}
-                className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                Next Topic
-                <ChevronRight size={20} />
-              </button>
+              {/* Show Next Topic or Next Unit button based on position */}
+              {isLastTopic && hasNextUnit ? (
+                <button
+                  onClick={onNextUnit}
+                  className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-indigo-700 text-indigo-200 hover:bg-indigo-600' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'} rounded-lg transition font-medium`}
+                  title={`Go to Unit ${nextUnit?.id}: ${nextUnit?.title}`}
+                >
+                  <span className="hidden sm:inline">Next Unit:</span>
+                  <span className="sm:hidden">Unit {nextUnit?.id}</span>
+                  <span className="hidden lg:inline">{nextUnit?.title}</span>
+                  <ChevronRight size={20} />
+                </button>
+              ) : (
+                <button
+                  onClick={onNextTopic}
+                  disabled={isLastTopic}
+                  className={`flex items-center gap-2 px-4 py-2 ${isDark ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  Next Topic
+                  <ChevronRight size={20} />
+                </button>
+              )}
             </div>
             
             {/* Take Quiz button */}

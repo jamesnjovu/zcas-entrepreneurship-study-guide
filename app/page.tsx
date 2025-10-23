@@ -34,12 +34,15 @@ const StudyGuideContent = () => {
     startQuiz,
     navigateToNextTopic,
     navigateToPreviousTopic,
+    navigateToNextUnit,
     markTopicCompleted,
     trackReadingTime,
     
     // Computed
     isFirstTopic,
     isLastTopic,
+    hasNextUnit,
+    getNextUnit,
   } = useApp();
 
   // Prevent hydration mismatch by not rendering theme-dependent styles until mounted
@@ -89,9 +92,12 @@ const StudyGuideContent = () => {
             onBackToTopics={backToTopics}
             onNextTopic={navigateToNextTopic}
             onPreviousTopic={navigateToPreviousTopic}
+            onNextUnit={navigateToNextUnit}
             onStartQuiz={onStartQuiz}
             isFirstTopic={isFirstTopic()}
             isLastTopic={isLastTopic()}
+            hasNextUnit={hasNextUnit()}
+            nextUnit={getNextUnit()}
             markTopicCompleted={() => markTopicCompleted(selectedUnit?.id, selectedTopic?.id)}
             trackReadingTime={(timeSpent: number) => trackReadingTime(selectedUnit?.id, selectedTopic?.id, timeSpent)}
           />

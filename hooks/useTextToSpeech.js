@@ -201,7 +201,9 @@ export const useTextToSpeech = () => {
     if (!isSupported || !text) return;
 
     // Cancel any ongoing speech and clear progress
-    speechSynthesis.cancel();
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+    }
     clearProgress();
 
     // Reset user stopped flag if this is a manual start
@@ -259,7 +261,7 @@ export const useTextToSpeech = () => {
       }
     };
     
-    utterance.onerror = () => {
+    utterance.onerror = (event) => {
       setIsSpeaking(false);
       setIsPaused(false);
       clearProgress();

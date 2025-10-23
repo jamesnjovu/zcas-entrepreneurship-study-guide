@@ -4,11 +4,13 @@
 This is an interactive study guide application for ZCAS University's Innovation & Entrepreneurship course. The application is built with Next.js and React, featuring a modern, accessible interface for students to study course materials and take quizzes.
 
 ## Tech Stack
-- **Framework**: Next.js 14+ with React 18+
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 15.5.6 with React 18+
+- **State Management**: Redux-like architecture with React Context API and useReducer
+- **Styling**: Tailwind CSS with conditional dark mode theming
 - **Icons**: Lucide React
 - **Language**: JavaScript (with JSDoc type annotations)
 - **Accessibility**: Web Speech API for text-to-speech
+- **Storage**: LocalStorage with debounced persistence
 
 ## Project Structure
 ```
@@ -16,28 +18,37 @@ This is an interactive study guide application for ZCAS University's Innovation 
 ├── app/
 │   └── page.tsx                 # Main application entry point
 ├── components/                  # Reusable UI components
-│   ├── ContentView.jsx         # Topic content display with auto-start speech
-│   ├── ErrorBoundary.jsx       # Error handling component
+│   ├── ContentView.jsx         # Topic content display with Next Unit navigation
+│   ├── ErrorBoundary.jsx       # Error handling component with theme consistency
+│   ├── FloatingProgressBar.jsx # Floating seekable progress bar with drag support
 │   ├── Header.jsx              # Application header
 │   ├── HomeView.jsx            # Unit selection view with settings access
+│   ├── InitialLoader.jsx       # SSR hydration loader with theme support
 │   ├── LoadingSpinner.jsx      # Loading state component
+│   ├── OfflineIndicator.jsx    # Network status indicator
 │   ├── PastExamView.jsx        # Past exam questions with pagination
+│   ├── ProgressView.jsx        # User progress tracking and statistics
 │   ├── QuizCard.jsx            # Quiz entry card
 │   ├── QuizQuestion.jsx        # Individual quiz question
 │   ├── QuizView.jsx            # Quiz interface with one-at-a-time questions
 │   ├── SettingsView.jsx        # Dedicated settings page for speech configuration
 │   ├── SpeechControls.jsx      # Simplified text-to-speech controls
-│   ├── TopicCard.jsx           # Topic selection card
+│   ├── TopicCard.jsx           # Topic selection card with consistent theming
 │   ├── TopicsView.jsx          # Topics listing
-│   └── UnitCard.jsx            # Unit selection card
-├── context/
-│   └── StudyGuideContext.jsx   # Global state management
+│   └── UnitCard.jsx            # Unit selection card with consistent theming
+├── store/                       # Global state management (Redux-like architecture)
+│   ├── AppProvider.jsx         # Context provider with actions and computed values
+│   ├── actions.js              # Action creators for all state mutations
+│   ├── index.js                # Store exports and re-exports
+│   ├── reducer.js              # Main reducer with theme, study, progress, offline state
+│   ├── storage.js              # LocalStorage persistence with debouncing
+│   └── types.js                # TypeScript-style type definitions with JSDoc
 ├── data/
 │   ├── pastExamQuestions.js    # Past exam questions with model answers
 │   └── studyData.js            # Course content and quiz data
 ├── hooks/
-│   ├── useStudyGuide.js        # Navigation and state logic with settings support
-│   └── useTextToSpeech.js      # Enhanced speech synthesis with auto-start & persistence
+│   ├── useStudyGuide.js        # Legacy navigation logic (superseded by global store)
+│   └── useTextToSpeech.js      # Enhanced speech synthesis with seeking and user intent tracking
 ├── types/
 │   └── index.js                # JSDoc type definitions
 └── CLAUDE.md                   # This file
@@ -48,7 +59,9 @@ This is an interactive study guide application for ZCAS University's Innovation 
 ### 1. Study Content Management
 - **Multi-unit course structure**: Units contain topics with structured content
 - **Progressive navigation**: Previous/Next topic buttons with smart disabled states
-- **Responsive design**: Works on desktop and mobile devices
+- **Next Unit navigation**: Seamless progression from last topic to next unit's first topic
+- **Auto-advance functionality**: Automatically progresses through content when speech completes
+- **Responsive design**: Works on desktop and mobile devices with adaptive layouts
 
 ### 2. Quiz System
 - **One-at-a-time questions**: Single question display with navigation
@@ -65,14 +78,17 @@ This is an interactive study guide application for ZCAS University's Innovation 
 - **Model answers**: Comprehensive solutions with show/hide functionality
 - **Essay-style questions**: Full question text with detailed model answers
 
-### 4. Enhanced Text-to-Speech System
+### 4. Advanced Text-to-Speech System
+- **Floating progress bar**: Draggable, seekable progress bar with play/pause/stop controls
+- **Text chunking and seeking**: Sentence-based navigation with precise seeking capability
+- **User intention tracking**: Smart pause/stop behavior that respects user actions over auto-start
 - **Auto-start functionality**: Configurable automatic speech when landing on pages
 - **Smart auto-advance**: Automatically moves to next page/topic when speech finishes
-- **Progress visualization**: Real-time progress bar with percentage and current text
+- **Progress visualization**: Real-time progress bar with percentage and current text display
 - **Comprehensive settings**: Dedicated settings page for full customization
 - **Voice customization**: Speed, pitch, voice selection with persistent preferences
-- **Local storage**: All settings automatically saved and restored
-- **Cross-platform support**: Works across study topics, past exams, and quizzes
+- **Local storage persistence**: All settings automatically saved and restored across sessions
+- **Cross-platform support**: Consistent functionality across all views and content types
 
 ### 5. Accessibility Features
 - **Full content reading**: Complete audio experience for all content types
@@ -81,10 +97,14 @@ This is an interactive study guide application for ZCAS University's Innovation 
 - **High contrast**: Optimized color schemes for visibility
 
 ### 6. Modern Architecture
-- **Component-based**: Modular, reusable components following single responsibility principle
-- **Custom hooks**: Separated business logic from UI components
-- **Context API**: Centralized state management without prop drilling
-- **Error boundaries**: Graceful error handling and recovery
+- **Redux-like state management**: Centralized store with actions, reducers, and computed values
+- **Component-based design**: Modular, reusable components following single responsibility principle
+- **Custom hooks**: Separated business logic from UI components with enhanced text-to-speech capabilities
+- **Global Context API**: Comprehensive state management without prop drilling
+- **Theme system**: Consistent dark/light mode with SSR hydration support
+- **Error boundaries**: Graceful error handling and recovery with theme consistency
+- **Progress tracking**: User activity monitoring with reading time and completion tracking
+- **Offline support**: Network status detection and offline state management
 
 ## Development Guidelines
 
@@ -103,10 +123,13 @@ This is an interactive study guide application for ZCAS University's Innovation 
 - Clean separation of concerns
 
 ### State Management
-- Use React Context for global state
-- Custom hooks for business logic
-- Immutable state updates
-- Proper cleanup in useEffect
+- **Global store pattern**: Redux-like architecture with useReducer and Context API
+- **Action-based mutations**: All state changes go through dispatched actions
+- **Computed values**: Derived state using useCallback for performance optimization
+- **Auto-persistence**: Debounced localStorage saving with state hydration on app init
+- **Custom hooks for business logic**: Separated concerns with reusable hook patterns
+- **Immutable state updates**: Proper reducer patterns with spread operators
+- **Proper cleanup in useEffect**: Memory leak prevention and listener cleanup
 
 ## Application Navigation
 
@@ -174,31 +197,96 @@ This is an interactive study guide application for ZCAS University's Innovation 
 
 ## Recent Enhancements (Latest Updates)
 
-### ✅ Completed Features
+### ✅ Latest Completed Features (December 2024)
+- **🎯 Next Unit Navigation**: Smart button that appears on last topic to navigate directly to next unit's first topic
+- **🎮 Floating Seekable Progress Bar**: Draggable progress bar with play/pause/stop controls and click/drag seeking
+- **🧠 User Intention Tracking**: Advanced pause/stop behavior that respects user actions over auto-start preferences
+- **📊 Global State Management**: Redux-like architecture with centralized actions, reducers, and computed values
+- **🎨 Consistent Theme System**: Unified dark/light mode across all components with SSR hydration support
+- **💾 Enhanced Persistence**: Debounced auto-save with state hydration and cross-session continuity
+
+### ✅ Previously Completed Features
 - **Dedicated Settings Page**: Comprehensive configuration center for all speech and behavior settings
 - **Auto-Start Speech**: Configurable automatic speech playback when navigating to new content
 - **Enhanced Text-to-Speech**: Progress bars, auto-advance, and persistent settings via localStorage
 - **Past Exam Questions**: Complete paginated exam system with model answers and sectioned navigation
 - **One-at-a-time Quiz**: Improved quiz interface with single-question display and progress tracking
-- **Settings Persistence**: All user preferences automatically saved and restored across sessions
+- **Progress Tracking**: User activity monitoring with reading time and completion statistics
 
-### 📋 Current Features Status
-- ✅ **Voice Customization**: Speed, pitch, voice selection with real-time updates
-- ✅ **Auto-Advance**: Smart progression through topics and exam pages
-- ✅ **Progress Visualization**: Real-time progress bars with percentage and current text display
-- ✅ **Cross-Platform Audio**: Consistent speech functionality across all views
-- ✅ **Responsive Design**: Mobile and desktop optimized interface
-- ✅ **Accessibility**: WCAG compliant with keyboard navigation and screen reader support
+### 🔧 Technical Architecture Improvements
+- ✅ **Redux-like State Management**: Centralized store with actions, reducers, and computed values
+- ✅ **Text Chunking System**: Sentence-based text parsing for precise seeking and progress tracking
+- ✅ **Multi-flag User Intent System**: Sophisticated tracking of user pause/stop vs auto-advance preferences
+- ✅ **SSR-Safe Theme Hydration**: Prevents hydration mismatches with proper mounted state handling
+- ✅ **Debounced Persistence**: Optimized localStorage writes with automatic state recovery
+- ✅ **Component Theme Consistency**: Unified conditional styling across all UI components
+
+## Technical Implementation Details
+
+### Global State Management Architecture
+The application uses a Redux-like pattern implemented with React's Context API and useReducer:
+
+**File Structure:**
+- `store/AppProvider.jsx` - Context provider with actions and computed values
+- `store/reducer.js` - Main reducer handling theme, study, progress, and offline state
+- `store/actions.js` - Action creators for all state mutations
+- `store/storage.js` - LocalStorage persistence with debouncing
+- `store/types.js` - JSDoc type definitions
+
+**Key Features:**
+- **Centralized Actions**: All state mutations go through dispatched actions
+- **Computed Values**: Derived state using useCallback for performance optimization
+- **Auto-Persistence**: Debounced localStorage saving with 500ms delay
+- **State Hydration**: Automatic state restoration on app initialization
+- **Theme Management**: SSR-safe theme switching with hydration support
+
+### Text-to-Speech System Architecture
+Advanced speech synthesis with seeking, user intention tracking, and progress visualization:
+
+**Core Components:**
+- `hooks/useTextToSpeech.js` - Main speech synthesis logic with user intention tracking
+- `components/FloatingProgressBar.jsx` - Draggable seekable progress bar
+- `components/SpeechControls.jsx` - Simplified speech controls
+
+**Key Features:**
+- **Text Chunking**: Sentence-based parsing for precise seeking capability
+- **User Intention Tracking**: Multiple flags (`userStoppedPlayback`, `userPausedForAutoStart`) 
+- **Seeking Support**: Click/drag progress bar with sentence-level navigation
+- **Auto-Advance Integration**: Smart progression that respects user pause/stop actions
+- **Settings Persistence**: Voice, speed, pitch, and behavior preferences saved to localStorage
+
+### Navigation System
+Smart navigation with unit-to-unit progression and context-aware button display:
+
+**Navigation Logic:**
+- `store/reducer.js:205-225` - Next unit navigation reducer logic
+- `components/ContentView.jsx:230-240` - Conditional Next Unit button rendering
+- `store/AppProvider.jsx:263-280` - Computed navigation state (hasNextUnit, getNextUnit)
+
+**Features:**
+- **Conditional Display**: "Next Unit" button only appears on last topic when next unit exists
+- **Responsive Text**: Button text adapts to screen size (mobile: "Unit X", desktop: "Next Unit: Title")
+- **Seamless Transitions**: Direct navigation to first topic of next unit
+- **Auto-Advance Compatible**: Works with speech auto-advance functionality
+
+### Theme System Implementation
+Consistent theming across all components with SSR hydration support:
+
+**Theme Architecture:**
+- **Conditional Styling**: All components use `isDark` flag for consistent theme application
+- **SSR-Safe Hydration**: `mounted` flag prevents hydration mismatches
+- **Component Consistency**: Standardized theme application across UnitCard, TopicCard, etc.
+- **DOM Integration**: Theme classes applied to document root for Tailwind dark: modifiers
 
 ## Future Enhancements
-- **Study Progress Tracking**: Bookmark system and completion tracking
+- **Enhanced Progress Analytics**: Detailed learning insights and performance tracking
 - **User Accounts**: Cloud-based progress persistence and cross-device sync
 - **Additional Quiz Types**: Drag-and-drop, matching, and fill-in-the-blank questions
 - **Offline Functionality**: Service workers for offline study capability
-- **Analytics Dashboard**: Learning insights and performance tracking
 - **Multi-language Support**: Interface and content localization
-- **Dark Mode Theme**: System-aware theme switching
 - **Study Reminders**: Notification system for scheduled study sessions
+- **Collaborative Features**: Study groups and progress sharing
+- **AI-Powered Recommendations**: Personalized study path suggestions
 
 ## Accessibility Compliance
 - WCAG 2.1 AA compliance

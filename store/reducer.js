@@ -202,6 +202,27 @@ const studyReducer = (state, action) => {
       
       return newTopic ? { ...state, selectedTopic: newTopic } : state;
     }
+    case STUDY_ACTIONS.NAVIGATE_TO_NEXT_UNIT: {
+      if (!state.selectedUnit) return state;
+      
+      // Find next unit in studyData
+      const currentUnitIndex = studyData.units.findIndex(
+        unit => unit.id === state.selectedUnit.id
+      );
+      
+      if (currentUnitIndex >= 0 && currentUnitIndex < studyData.units.length - 1) {
+        const nextUnit = studyData.units[currentUnitIndex + 1];
+        const firstTopicOfNextUnit = nextUnit.topics[0];
+        
+        return {
+          ...state,
+          selectedUnit: nextUnit,
+          selectedTopic: firstTopicOfNextUnit,
+        };
+      }
+      
+      return state;
+    }
     default:
       return state;
   }
@@ -266,6 +287,7 @@ export const appReducer = (state, action) => {
     case STUDY_ACTIONS.SUBMIT_QUIZ:
     case STUDY_ACTIONS.RESET_QUIZ:
     case STUDY_ACTIONS.NAVIGATE_TOPIC:
+    case STUDY_ACTIONS.NAVIGATE_TO_NEXT_UNIT:
       return {
         ...state,
         study: studyReducer(state.study, action),

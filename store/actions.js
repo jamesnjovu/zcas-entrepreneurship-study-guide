@@ -24,6 +24,7 @@ export const STUDY_ACTIONS = {
   SUBMIT_QUIZ: 'STUDY/SUBMIT_QUIZ',
   RESET_QUIZ: 'STUDY/RESET_QUIZ',
   NAVIGATE_TOPIC: 'STUDY/NAVIGATE_TOPIC',
+  NAVIGATE_TO_NEXT_UNIT: 'STUDY/NAVIGATE_TO_NEXT_UNIT',
 };
 
 // Offline Actions
@@ -74,6 +75,7 @@ export const studyActions = {
   submitQuiz: (answers) => ({ type: STUDY_ACTIONS.SUBMIT_QUIZ, payload: answers }),
   resetQuiz: () => ({ type: STUDY_ACTIONS.RESET_QUIZ }),
   navigateTopic: (direction) => ({ type: STUDY_ACTIONS.NAVIGATE_TOPIC, payload: direction }),
+  navigateToNextUnit: () => ({ type: STUDY_ACTIONS.NAVIGATE_TO_NEXT_UNIT }),
 };
 
 export const offlineActions = {

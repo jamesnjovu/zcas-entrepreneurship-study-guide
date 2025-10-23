@@ -8,6 +8,7 @@ import {
   appActions 
 } from './actions.js';
 import { statePersistence, createAutoSave } from './storage.js';
+import { studyData } from '../data/studyData.js';
 
 // Create context
 const AppContext = createContext();
@@ -183,6 +184,10 @@ export const AppProvider = ({ children }) => {
       dispatch(studyActions.navigateTopic('previous'));
     }, []),
 
+    navigateToNextUnit: useCallback(() => {
+      dispatch(studyActions.navigateToNextUnit());
+    }, []),
+
     // Navigation helpers
     goHome: useCallback(() => {
       dispatch(studyActions.setCurrentView('home'));
@@ -255,6 +260,25 @@ export const AppProvider = ({ children }) => {
         topic => topic.id === state.study.selectedTopic.id
       ) === topics.length - 1;
     }, [state.study.selectedUnit, state.study.selectedTopic]),
+
+    hasNextUnit: useCallback(() => {
+      if (!state.study.selectedUnit) return false;
+      const currentUnitIndex = studyData.units.findIndex(
+        unit => unit.id === state.study.selectedUnit.id
+      );
+      return currentUnitIndex >= 0 && currentUnitIndex < studyData.units.length - 1;
+    }, [state.study.selectedUnit]),
+
+    getNextUnit: useCallback(() => {
+      if (!state.study.selectedUnit) return null;
+      const currentUnitIndex = studyData.units.findIndex(
+        unit => unit.id === state.study.selectedUnit.id
+      );
+      if (currentUnitIndex >= 0 && currentUnitIndex < studyData.units.length - 1) {
+        return studyData.units[currentUnitIndex + 1];
+      }
+      return null;
+    }, [state.study.selectedUnit]),
   };
 
   const contextValue = {
